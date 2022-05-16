@@ -1,6 +1,15 @@
 # GIT
 
-### 初始化
+### 第一次提交
+
+* 右键`Git Bash Here`
+
+  ```shell
+  git config --global user.name "用户名"
+  git config --global user.email "你的邮箱地址"
+  ```
+
+### 初始化仓库
 
 ```shell
 git init
@@ -8,13 +17,13 @@ git init
 
 ### 重命名
 
-**git mv**  命令用于重命名 文件，目录 或 符号链接。
+`git mv ` 命令用于重命名 文件，目录 或 符号链接。
 
 ```shell
 git mv oldName newName
 ```
 
-git mv 命令其实是首先执行了 mv 命令，将旧文件重命名为新文件，接着删除旧文件，并使用 git add 添加新文件。
+`git mv `命令其实是首先执行了 mv 命令，将旧文件重命名为新文件，接着删除旧文件，并使用 `git add `添加新文件。
 
 ```shell
 1. mv oldName newName
@@ -22,16 +31,23 @@ git mv 命令其实是首先执行了 mv 命令，将旧文件重命名为新文
 3. git add newName
 ```
 
-| 命令             | 用途     |
-| ---------------- | -------- |
-| git status       | 查看状态 |
-| git reset --hard | 强制还原 |
-|                  |          |
-|                  |          |
+### 常用命令
 
-### 查看提交树
+| 命令                  | 用途                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| `git status`          | 查看状态                                                     |
+| `git reset --hard`    | 强制还原                                                     |
+| `git ls-tree -r HEAD` | 查看提交树                                                   |
+| `git clone`           | 克隆仓库                                                     |
+| `git init `           | 初始化仓库                                                   |
+| ` git add -A `        | 提交所有变化                                                 |
+| `git add -u`          | 提交被修改(modified)和被删除(deleted)文件，不包括新文件(new) |
+| `git add .`           | 提交新文件(new)和被修改(modified)文件，不包括被删除(deleted)文件 |
+|                       |                                                              |
 
-`git ls-tree -r HEAD`
+### 
+
+
 
 ### 修改远程仓库地址
 
