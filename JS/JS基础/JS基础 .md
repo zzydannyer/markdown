@@ -1,14 +1,46 @@
 # JS
 
-## 基本数据类型
+### 数据类型
 
-Number、String、Boolean、Null、Undefined、Symbol、bigInt
+#### 基本数据类型
 
-## 引用数据类型
+`Number`、`String`、`Boolean`、`Null`、`Undefined`、`Symbol`、`BigInt`
 
-object、Array、Date、Function、RegExp
+#### 引用数据类型
 
-## typeof 
+`Object`、`Array`、`Date`、`Math`、`Function`、`RegExp`
+
+### 堆 和 栈
+
+* ==堆==：存储引用类型值的空间
+* ==栈==：存储基本类型值和执行代码的环境
+
+### 对象
+
+* 对象的key数字和字符串等效（对象和数组的区别）
+
+  ```js
+  a[0] === a['0']
+  ```
+
+* key会转化成字符串`[object Object] `（`Object.prototype.toString` / `valueOf`）
+
+  ```js
+  a = {}
+  b[a] === b['object Object']
+  ```
+
+  
+
+
+
+### 隐式转换
+
+* `Boolean()`或`!!`检测虚值
+
+* `''`、`0`、`null`、`undefined`、`NaN`转换为false
+
+### typeof
 
 * number、string、boolean
 * function、object、undefined
@@ -23,11 +55,11 @@ Boolean('')     //false
 Boolean(' ')	//true
 ```
 
-## 作用域链
+### 作用域链
 
 通过作用域链来访问父级声明的变量或函数
 
-## 原型、原型链、继承
+### 原型、原型链、继承
 
 * 所有函数有``prototype`属性
 
@@ -68,13 +100,13 @@ Boolean(' ')	//true
 
 ![image-20220319003041501](C:\Users\14046\AppData\Roaming\Typora\typora-user-images\image-20220319003041501.png)
 
-## 变量提升
+### 变量提升
 
-`变量`和`函数声明`会提升到最顶部执行
+* `变量`和`函数声明`会提升到最顶部执行
 
-```js
-var a => undefined
-```
+  ```js
+  var a => undefined
+  ```
 
 * 函数声明提升高于变量提升
 * 函数内部用`var`声明后不会再往上寻找
@@ -85,18 +117,56 @@ var a => undefined
 * 立即执行函数
 * 块级作用域
 
-### == 和 === 的区别
+### `== `和` === `
 
 前者`值相等`，后者会比较数据类型和值，`值和引用地址`相等
 
-## 闭包
+### `&& ` 和 `||`
+
+* 逻辑与
+
+```js
+if(e){
+    e.do()
+}
+//
+e && e.do()
+```
+
+* 逻辑或
+
+```js
+let n = this.n || n
+```
+
+### 冒泡 和 捕获
+
+* 捕获 `window -> 目标元素`
+* 冒泡 `目标元素 -> window`
+
+### 事件
+
+|                           |                              |
+| ------------------------- | ---------------------------- |
+| `event.preventDefault()`  | 阻止事件默认行为             |
+| `event.stopPropagation()` | 阻止事件捕获 / 冒泡          |
+| `event.target`            | 触发事件的元素（事件发出者） |
+| `event.currentTarget`     | 事件绑定的元素（事件监听者） |
+
+
+
+### window.length
+
+* `iframe`的个数
+
+### 闭包
 
 一个`函数里返回一个函数`，里面的函数能够读取外部函数的内部变量
 
 * 将变量始终存在内存中，可以封装私有属性和方法
 * 耗费内存、会造成内存溢出
 
-## localStorage与sessionStorage的区别
+### localStorage与sessionStorage
 
 - 生命周期不同：
 
@@ -104,7 +174,7 @@ var a => undefined
 
   `sessionStorage`生命周期结束于浏览器或者tab页的关闭
 
-## 内存泄漏
+### 内存泄漏
 
 程序中已动态分配的堆内存未释放或无法释放，造成变慢、崩溃、延迟等
 
@@ -112,7 +182,7 @@ var a => undefined
 * DOM清空时还在引用全局变量
 * 定时器未清除
 
-## 垃圾回收机制
+### 垃圾回收机制
 
 为了防止内存泄漏，不停寻找不再使用的变量
 
@@ -127,14 +197,14 @@ var a => undefined
 
    ==引用计数==：存在于低版本浏览器，跟踪一个==值的引用次数==，声明一个变量并将一个引用类型赋值给变量时，这个值的引用次数是`1`，当它赋给另一个变量时引用次数`+1`，包含这个引用值的变量指向另一个引用时`-1`，变为`0`时进行回收
 
-## this
+### this
 
 `this`总是指向函数的直接调用者
 
 * 指向构造函数实例化`new`出来的对象
 * 指向事件触发的对象
 
-#### 箭头函数和普通函数的区别
+### 箭头函数和普通函数的区别
 
 箭头函数的this来自上下文环境中的this
 
@@ -151,14 +221,18 @@ func(1,2,3,4) //[1,2,3,4]
 
 
 
-## null和undefined
+### null和undefined
 
-null定义引用类型，undefined定义基本类型
+* `null`定义引用类型，`undefined`定义基本类型
+* `null`明确定义给变量的值，`undefined`未指定变量的默认值
+* `null`不代表任何值的值，`undefined`没有显式返回的函数
 
 ```js
 console.log(typeof a) //undefined
 ```
-## undeclared&undefined 
+
+
+### undeclared和undefined
 
 - undefined：声明了变量，但是没有赋值
 - undeclared：没有声明变量就直接使用
@@ -168,7 +242,7 @@ var a; //undefined
 b;    // b is not defined
 ```
 
-## undefined
+### undefined
 
 既是原始数据类型，也是原始值
 定义在全局对象window上,window.undefined
@@ -215,19 +289,19 @@ console.log(b) //b is not defined 报错
 <a href="javascript:void(0)">
 ```
 
-## 单线程
+### 单线程
 
 单线程：只有一个线程，js是单线程，执行会阻碍DOM渲染
 
 webworker：多线程，但不能访问DOM
 
-## 面向对象编程
+### 面向对象编程
 
 使用==对象==、==类==、==继承==、==封装==等基本概念进行程序设计
 
 * 易维护、易扩展，提高复用和继承性，提高开发效率
 
-## 严格模式
+### 严格模式
 
 作用于当前作用域及其子作用域
 
@@ -240,12 +314,12 @@ webworker：多线程，但不能访问DOM
 * 不能使用`with`
 * 禁止this指向全局对象
 
-## attribute和property的区别
+### attribute和property的区别
 
 * `attribute`是HTML文档中DOM元素`标签的属性`
 * `property`是js中DOM元素`对象的属性`
 
-## Web worker的作用和场景
+### Web worker的作用和场景
 
 开启一个子线程，且子线程的操作不受线程的影响
 
@@ -263,7 +337,7 @@ webworker：多线程，但不能访问DOM
 * 提供原生的`Promise`对象
 * 引入`module`模块
 
-#### let、const
+### let、const
 
 都不存在变量提升
 
@@ -282,12 +356,12 @@ webworker：多线程，但不能访问DOM
   run();
   ```
 
-#### ``??``代替 `||`
+### ``??``代替 `||`
 
 * `??`用于判断左侧为`null`或`undefined`时，返回右边的值
 * `||`判断左边为空字符串或`0`等`false`值时才返回右边的值
 
-#### findindex、splice、unshift、pop
+### findindex、splice、unshift、pop
 
 往列表里添加项目
 
@@ -331,7 +405,7 @@ addToArr(arr,item,Fn,maxLength){
 | indexOf / lastIndexOf(value,fromIndex)         | 查找数组项，返回对应下标                                     |
 | reduce / reduceRight(fn(prev,cur),defaultPrev) | 两两执行，prev为上一次执行return的值，cur为当前值            |
 
-#### 数组合并
+### 数组合并
 
 * concat
 
@@ -390,6 +464,45 @@ let result = arr.some((item,index,arr)=>{
 * forEach遍历循环原数组`forEach((item, index, Array)=>{})`
 
 * map返回新数组，callback里需要return值，否则返回undefined
+
+### 深浅拷贝
+
+* 浅克隆 - 循环
+
+  ```js
+  let clone = {}
+  for(let key in obj){
+      if(obj.hasOwnProperty(key)){ //查找对象自身属性，不查找原型链
+          clone[key] = obj[key]
+      }
+  }
+  ```
+
+* 浅克隆 - 扩展运算符
+
+  ```js
+  let clone = {...obj}
+  ```
+
+* 浅克隆 - 对象合并
+
+  ```js
+  let clone = Object.assign({}, obj)
+  ```
+
+* 深克隆 - JSON（日期、函数、正则不可用）
+
+  ```js
+  let clone = JSSON.parse(JSON.stringify(obj))
+  ```
+
+* 深克隆 - 循环递归
+
+  ```js
+  
+  ```
+
+  
 
 
 

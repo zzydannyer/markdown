@@ -98,7 +98,7 @@ export default{
 
 `created`、`beforeMount`、`mounted`
 
-## Vue2响应式 / 数据劫持代理
+## Vue2响应式
 
 * 通过==数据劫持==、组合、==发布订阅==的方式实现双向绑定
 * Vue2使用`Object.defineProperty`，Vue3使用Proxy，性能更好，不需要循环遍历
@@ -127,7 +127,132 @@ for(let item in data){
 }
 ```
 
+### v-model双向绑定
 
+1. **定义**
+
+   * 双向绑定是一个指令`v-model`，可以绑定一个==响应式==数据到视图，数据变化视图也跟着改变
+
+   * 本质上是语法糖，相当于`:value`和`@input`，可以减少繁琐的事件处理，提高开发效率
+
+2. **使用**
+
+   * 表单项
+
+     * `input`上绑定值
+
+     * `checkbox`上绑定`true-value`和`false-value`
+
+       ```html
+       <div>
+         <input
+           type="checkbox"
+           v-model="toggle"
+           :true-value="done"
+           :false-value="todo"
+         />{{ toggle }}
+       </div>
+       ```
+
+       ```jsx
+       const type = {
+         done: '已完成',
+         todo: '未完成',
+       };
+       setup() {
+           const toggle = ref('已完成');
+           return {
+             toggle,
+             ...toRefs(type),
+           };
+         },
+       ```
+
+     * `radio`上绑定`value`
+
+       ```html
+       <div>
+         <input type="radio" v-model="sex" :value="male" />{{male}}
+         <input type="radio" v-model="sex" :value="female" />{{female}}
+         {{ sex }}
+       </div>
+       ```
+
+       ```js
+       const gender = {
+         male: 'male',
+         female: 'female',
+       };
+       setup() {
+           const sex = ref('男');
+           return {
+             sex,
+             ...toRefs(gender),
+           };
+         },
+       ```
+
+     * `select`通过`option`绑定`value`
+
+       ```html
+       <div>
+         <select v-model="direct">
+           <option :value="east">{{ east }}</option>
+           <option :value="north">{{ north }}</option>
+           <option :value="west">{{ west }}</option>
+           <option :value="south">{{ south }}</option>
+         </select>
+         {{ direct }}
+       </div>
+       ```
+
+       ```js
+       const direction = {
+         east: '东',
+         north: '北',
+         south: '南',
+         west: '西',
+       };
+       setup() {
+           const direct = ref('东');
+           return {
+             direct,
+             ...toRefs(direction),
+           };
+         },
+       ```
+
+       
+
+   * 自定义组件
+
+   * 修饰符
+
+     * `.lazy` - 当输入框失去焦点后触发`change`事件更新视图
+     * `.number` - 获取转换后的数字
+     * `.trim` - 去掉前后空格，中间的会保留一个空格，其余过滤
+
+1. 获取节点
+
+   ```jsx
+   compile( node ){
+       node.childNodes.forEach((item, index) => {
+           if( item.hasAttribute('v-model') ){
+               //获取v-model节点绑定的值
+               let attr = item.getAttrtibute('v-model').trim()
+               //在data中找到此值
+               if( this.hasOwnProperty(attr)){
+                   item.value = this[attr]
+               }
+               item.addEventListener('input', event => {
+                   this[attr] = item.value
+               })
+           }
+       })
+   }
+   ```
+
+   
 
 ## SPA和MPA
 
@@ -310,7 +435,7 @@ this.$refs.test.$el //获取组件渲染后的DOM
 
 * methods：==无缓存==，调用总会执行
 
-## vue数组方法
+## vue2数组方法
 
 * `push`、`pop`、`shift`、`unshift`、`splice`、`sort`、`reverse`
 

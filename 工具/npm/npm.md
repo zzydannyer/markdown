@@ -1,28 +1,31 @@
-## npm
-<<<<<<< HEAD
+# npm
 
-npm init -y 初始化项目，生成package.json
+`npm init -y `初始化项目，生成`package.json`
 
-## npm更新但版本号未变
+### npm更新但版本号未变
 
-npm全局默认安装路径：C:\Users\Administrator\AppData\Roaming
-nodejs中的npm路径：C:\Program Files\nodejs\node_modules\npm
-查看版本
+* npm全局默认安装路径：`C:\Users\Administrator\AppData\Roaming`
 
-```
-npm -v
-```
+* nodejs中的npm路径：`C:\Program Files\nodejs\node_modules\npm`
 
-查看npm路径
+  
 
-```shell
-npm root -g
-where npm
-npm config get prefix //npm路径
-npm config ger cache //npm cache路径
-```
+* 查看版本
 
-初始化npm路径
+  ```shell
+  npm -v 
+  ```
+
+* 查看npm路径
+
+  ```shell
+  npm root -g
+  where npm
+  npm config get prefix //npm路径
+  npm config ger cache //npm cache路径
+  ```
+  
+* 初始化npm路径
 
 ```shell
 npm config set prefix  "..."
@@ -44,5 +47,3 @@ npm cache clean -f
 ```
 =======
 npm init -y 初始化项目，生成package.json
-
->>>>>>> c38a18ae1c1d2ff4d33831d99dff05b2d05e0364
