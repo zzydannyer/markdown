@@ -1,16 +1,27 @@
 ## 手写instanceof
 
-```javascript
-function myInstanceOf ( obj, className) {
-    const pointer = obj   /* 指针 */
-    while(pointer){
-        if ( pointer === className.prototype ){
-           return true
+```js
+class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+}
+const person = new Person('王五', 16)
+
+function myInstanceOf(obj, className) {
+
+    let pointer = obj   /* 指针 */
+    while (pointer) {
+        if (pointer === className.prototype) {
+            return true
         }
         pointer = pointer.__proto__
     }
     return false
 }
+
+console.log(myInstanceOf(person, Array));
 ```
 
 ## 手写Call
@@ -25,8 +36,6 @@ Function.prototype.myCall = function( ) {
     return res
 }
 ```
-
-
 
 ## 手写Promise
 

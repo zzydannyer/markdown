@@ -591,7 +591,43 @@ async function func(){
 }
 ```
 
+#### **循环中使用异步**
 
+```js
+function delayLog(item){
+    return new Promise(resolve => {
+        setTimeout(() = > resolve(item), 1000)
+    })
+}
+
+function processArr(arr){
+    arr.forEach(async item => {
+        console.log(await delayLog(item))
+    })
+    console.log('打印完毕')
+}
+/*
+打印完毕
+...arr
+*/
+
+async function processArr(arr){
+    for(let item of arr){
+        console.log(await delayLog(item))
+    }
+    console.log('打印完毕')
+}
+/*
+打印完毕
+...arr
+*/
+```
+
+ES9 for await of
+
+```js
+for await (const item of arr){}
+```
 
 ### **Object.create**
 
@@ -651,60 +687,298 @@ prototype有两个属性：
 
 ![宏任务微任务](C:\Users\14046\Desktop\DOC\images\宏任务微任务.png)
 
+## 实用方法
+
+### 首字母大写
+
+```js
+firstUpperCase(){
+    let [first, ...rest] = this.dataType
+    return first.toUpperCase() + rest.join('')
+}
+```
+
+
+
+### 循环中使用异步
+
+```js
+function delayLog(item){
+    return new Promise(resolve => {
+        setTimeout(() = > resolve(item), 1000)
+    })
+}
+
+function processArr(arr){
+    arr.forEach(async item => {
+        console.log(await delayLog(item))
+    })
+    console.log('打印完毕')
+}
+/*
+打印完毕
+...arr
+*/
+
+async function processArr(arr){
+    for(let item of arr){
+        console.log(await delayLog(item))
+    }
+    console.log('打印完毕')
+}
+/*
+打印完毕
+...arr
+*/
+```
+
+* ES9` for await of`
+
+```js
+for await (const item of arr){}
+```
+
+### 动态添加类名
+
+* 判断是否有这个类名
+
+```js
+hasClass(el,className){
+    const reg = new RegExp('(^|\\s)'+ className +'(\\s|$)')  
+    // \\s    /\s/ 空格
+    // ^开头  |或  $结尾
+	return reg.test(el.className)
+}
+```
+
+```js
+addClass(el,className){
+    if(hasClass(el, className)){
+        return;
+    }
+
+    let newClass = el.className.split(' ')    //Array
+    newClass.push('className')
+    newClass.join(' ')    //String
+}
+
+```
+
+
+
+### ClassList方法
+
+```js
+Element.classList.length
+Element.classList.contains('className')  //判断一个类型是不是存在，返回true和false
+Element.classList.add('test')            //添加一个类名
+Element.classList.remove('test')         //去掉一个类名
+Element.classList.toggle('test')         //引号中的类名，有就删除，没有就添加
+
+```
+
+### 获取数组重复2次或者两次以上的元素
+
+```js
+let arr = [12,3,4,3,4,5,22,3,4,6,7,6,75,67,56,7,12];
+let Arr = [];
+let repArr = [];
+for(let i = 0; i < arr.length; i++){
+    if(Arr.indexOf(arr[i]) == -1){
+        Arr.push(arr[i])
+    }else{
+        if(repArr.indexOf(arr[i]) == -1){
+            repArr.push(arr[i])
+        }
+    }
+}
+```
+
+### 递归拼接树形结构
+
+```js
+//树形菜单结构
+const rootList = [
+    { id:1,  parent:null, text:'菜单1' },
+    { id:11, parent:1,    text:'菜单1-1' },
+    { id:12, parent:1,    text:'菜单1-2' },
+    { id:2,  parent:null, text:'菜单2' },
+    { id:21, parent:2,    text:'菜单2-1' }
+]
+
+function getTreeList(rootList, id, list){
+    for(let item of rootList){
+        if(item.parent == id){
+            list.push(item)
+        }
+    }
+    
+    for(let i of list){
+        i.children = []
+        
+        getTreeList(rootList, i.id, i.children)
+            
+        if(i.children.length == 0){
+            delete i.children
+        }
+    }
+    
+    return list
+}
+
+const res = getTreeList(rootList, null, [])
+
+/**
+ [
+ 	{
+ 		id: 1,
+		parent: null,
+		text: "菜单1",
+		children: [
+			{
+				id: 11
+				parent: 1
+				text: "菜单1-1"
+			},
+			{
+				id: 12
+				parent: 1
+				text: "菜单1-2"
+			}
+		]
+ 	},
+ 	{
+ 		id: 2,
+		parent: null,
+		text: "菜单2",
+		children: [
+			{
+				id: 21
+                parent: 2
+                text: "菜单2-1"
+			}
+		]
+ 	}
+ ]
+ */
+```
+
+### newSet解构
+
+```js
+var arr = new Set([1,2,3,4,5])
+[...arr][arr.size-1]
+```
+
+### 触屏即播放
+
+```javascript
+$('html').one('touchstart',function(){  
+ audio.play()  
+})
+```
+
+#### **获取数组重复2次或者两次以上的元素**
+
+```js
+let arr = [12,3,4,3,4,5,22,3,4,6,7,6,75,67,56,7,12];
+let Arr = [];
+let repArr = [];
+for(let i = 0; i < arr.length; i++){
+    if(Arr.indexOf(arr[i]) == -1){
+        Arr.push(arr[i])
+    }else{
+        if(repArr.indexOf(arr[i]) == -1){
+            repArr.push(arr[i])
+        }
+    }
+}
+```
+
+### **ajax问题/错误**
+
+* 通过设置`tranditional`来阻止深度序列化
+
+```js
+$.ajax(
+    url:"xxx",
+    tranditional:true,
+    data:data
+}
+```
+
+### 立即执行函数里传window
+
+```js
+(function (window, undefined){
+    
+})(window)
+```
+
+* 减少作用域链查找，访问速度更快
+* `undefined`是变量，可以重新赋值但无效，`null`是关键字不能赋值
+
+### Object.defineProperty()取代直接修改原型链
+
+```js
+vue.prototype.$router = {}
+
+Object.defineProperty(vue.prtotype, '$route', {
+	set:function(){
+		...
+	}
+})
+```
+
+### 架构模式
+
+* 工厂模式
+
+* 建造者（适用于经常需要构造）
+
+* 函数式（适合tree-shaking）
+
+# 原生JS
+
 ### 元素视图的各个尺寸
 
-| 属性         | 说明                                                         |
-| ------------ | ------------------------------------------------------------ |
-| offsetLeft   | 获取当前元素到定位父节点的left方向的距离                     |
-| offsetTop    | 获取当前元素到定位父节点的top方向的距离                      |
-| offsetWidth  | 获取当前元素 width + 左右padding + 左右border-width          |
-| offsetHeight | 获取当前元素 height + 上下padding + 上下border-width         |
-| clientWidth  | 获取当前元素 width + 左右padding                             |
-| clientHeight | 获取当前元素 height + 上下padding                            |
-| scrollWidth  | 当前元素内容真实的宽度，内容不超出盒子宽度时为盒子的clientWidth |
-| scrollHeight | 当前元素内容真实的高度，内容不超出盒子高度时为盒子的clientHeight |
+| 属性           | 说明                                                         |
+| -------------- | ------------------------------------------------------------ |
+| `offsetLeft`   | 获取当前元素到定位父节点的left方向的距离                     |
+| `offsetTop`    | 获取当前元素到定位父节点的top方向的距离                      |
+| `offsetWidth`  | 获取当前元素 width + 左右padding + 左右border-width          |
+| `offsetHeight` | 获取当前元素 height + 上下padding + 上下border-width         |
+| `clientWidth`  | 获取当前元素 width + 左右padding                             |
+| `clientHeight` | 获取当前元素 height + 上下padding                            |
+| `scrollWidth`  | 当前元素内容真实的宽度，内容不超出盒子宽度时为盒子的`clientWidth` |
+| `scrollHeight` | 当前元素内容真实的高度，内容不超出盒子高度时为盒子的`clientHeight` |
 
 ### 宽高获取方法
 
-| 属性                       | 说明                                                         |
-| :------------------------- | :----------------------------------------------------------- |
-| window.innerWidth          | 除去菜单栏的窗口宽度                                         |
-| window.innerHeight         | 除去菜单栏的窗口高度                                         |
-| window.outerWidth          | 包括菜单栏的窗口宽度                                         |
-| window.outerHeight         | 包括菜单栏的窗口高度                                         |
-| window.screen.width        | 电脑屏幕的宽度                                               |
-| window.screen.height       | 电脑屏幕的高度                                               |
-| window.screen.availWidth   | 电脑屏幕的可利用宽度                                         |
-| window.screen.availHeight  | 电脑屏幕的可利用高度                                         |
-| window.screenLeft          | 浏览器距离屏幕的宽度                                         |
-| window.screenTop           | 浏览器距离屏幕的高度                                         |
-| document.body.clientWidth  | 指元素的自身的宽度（包括padding）                            |
-| document.body.clientHeight | 指元素的自身的高度（包括padding）                            |
-| document.body.clientLeft   | 子级div内容位置到父级内容区域的宽度距离（即border值）        |
-| document.body.clientTop    | 子级div内容位置到父级内容区域的高度距离（即border值）        |
-| document.body.offsetWidth  | 指定元素的宽度（包括padding，border和内容）                  |
-| document.body.offsetHeight | 指定元素的高度（包括padding，border和内容）                  |
-| document.body.offsetLeft   | 距离父级元素的宽度                                           |
-| document.body.offsetTop    | 距离父级元素的高度                                           |
-| document.body.scrollWidth  | 获取的是文档的宽度（当指定的宽度小于浏览器窗口的时候，为浏览器的宽度） |
-| document.body.scrollHeight | 获取的是文档的高度（当指定的高度小于浏览器窗口的时候，为浏览器的高度） |
-| document.body.scrollLeft   | 文档被滚动右去的时候（即滚动条往右滚动的距离）               |
-| document.body.scrollTop    | 文档被滚动上去的时候（即滚动条往上滚动的距离）               |
-
-
-
-
-
-
-
-
-﻿
-
-
-
-
-
-
+| 属性                         | 说明                                                         |
+| :--------------------------- | :----------------------------------------------------------- |
+| `window.innerWidth`          | 除去菜单栏的窗口宽度                                         |
+| `window.innerHeight`         | 除去菜单栏的窗口高度                                         |
+| `window.outerWidth`          | 包括菜单栏的窗口宽度                                         |
+| `window.outerHeight`         | 包括菜单栏的窗口高度                                         |
+| `window.screen.width`        | 电脑屏幕的宽度                                               |
+| `window.screen.height`       | 电脑屏幕的高度                                               |
+| `window.screen.availWidth`   | 电脑屏幕的可利用宽度                                         |
+| `window.screen.availHeight`  | 电脑屏幕的可利用高度                                         |
+| `window.screenLeft`          | 浏览器距离屏幕的宽度                                         |
+| `window.screenTop`           | 浏览器距离屏幕的高度                                         |
+| `document.body.clientWidth`  | 指元素的自身的宽度（包括padding）                            |
+| `document.body.clientHeight` | 指元素的自身的高度（包括padding）                            |
+| `document.body.clientLeft`   | 子级div内容位置到父级内容区域的宽度距离（即border值）        |
+| `document.body.clientTop`    | 子级div内容位置到父级内容区域的高度距离（即border值）        |
+| `document.body.offsetWidth`  | 指定元素的宽度（包括padding，border和内容）                  |
+| `document.body.offsetHeight` | 指定元素的高度（包括padding，border和内容）                  |
+| `document.body.offsetLeft`   | 距离父级元素的宽度                                           |
+| `document.body.offsetTop`    | 距离父级元素的高度                                           |
+| `document.body.scrollWidth`  | 获取的是文档的宽度（当指定的宽度小于浏览器窗口的时候，为浏览器的宽度） |
+| `document.body.scrollHeight` | 获取的是文档的高度（当指定的高度小于浏览器窗口的时候，为浏览器的高度） |
+| `document.body.scrollLeft`   | 文档被滚动右去的时候（即滚动条往右滚动的距离）               |
+| `document.body.scrollTop`    | 文档被滚动上去的时候（即滚动条往上滚动的距离）               |
 
 
 
