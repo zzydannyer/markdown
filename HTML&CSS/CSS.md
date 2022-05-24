@@ -148,6 +148,21 @@
 
 ## Flex
 
+### 水平垂直居中
+
+```css
+.center {
+    justify-content: center;
+    align-items: center;
+}
+```
+
+
+
+### flex: 1
+
+`flex-grow` 、`flex-shrink` 、`flex-basis`这三个样式的合集，全写状态为`flex:0 1 auto`，简写为flex: 1
+
 ### 最后一行元素左对齐
 
 * 局限于一行三个元素
@@ -191,6 +206,11 @@ obj{
     font-size:0.16rem;
 }
 ```
+
+### rem与em
+
+- rem：相对于`<html>`标签的`font-size`决定大小，例如html标签font-size为14px，则2rem === 28px
+- em：相对于自身的font-size去决定大小，自身没有font-size则继承祖先级元素的font-size
 
 ## **阻止旋转屏幕时自动调整字体大小**
 

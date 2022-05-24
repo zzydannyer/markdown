@@ -2,13 +2,27 @@
 
 ### 数据类型
 
-#### 基本数据类型
+#### 基本类型（原始类型）
 
-`Number`、`String`、`Boolean`、`Null`、`Undefined`、`Symbol`、`BigInt`
+* `Number`
+* `String`
+* `Boolean`
+* `Null`
+* `Undefined`
+* `Symbol`
+* `BigInt`
 
-#### 引用数据类型
+#### 引用类型
 
-`Object`、`Array`、`Date`、`Math`、`Function`、`RegExp`
+* `Object`
+
+#### 构造函数class
+
+* `Array`
+* `Date`
+* `Math`
+* `Function`
+* `RegExp`
 
 ### 堆 和 栈
 
@@ -53,11 +67,19 @@ typeof c    //object
 ' ' == false     //true
 Boolean('')     //false
 Boolean(' ')	//true
+
+{}+[] //0
 ```
 
 ### 作用域链
 
-通过作用域链来访问父级声明的变量或函数
+JS在执行过程中会创造可执行上下文，其中包含外部环境的引用
+
+通过这个引用来==访问外部声明的变量或函数==，这些引用串联成作用域链
+
+### 参数传递
+
+* **基本类型**按值传递，引用类型传引用地址
 
 ### 原型、原型链、继承
 
@@ -204,7 +226,7 @@ let n = this.n || n
 * 指向构造函数实例化`new`出来的对象
 * 指向事件触发的对象
 
-### 箭头函数和普通函数的区别
+### 箭头函数
 
 箭头函数的this来自上下文环境中的this
 
@@ -221,7 +243,7 @@ func(1,2,3,4) //[1,2,3,4]
 
 
 
-### null和undefined
+### null 和 undefined
 
 * `null`定义引用类型，`undefined`定义基本类型
 * `null`明确定义给变量的值，`undefined`未指定变量的默认值
@@ -231,8 +253,7 @@ func(1,2,3,4) //[1,2,3,4]
 console.log(typeof a) //undefined
 ```
 
-
-### undeclared和undefined
+### undeclared 和 undefined
 
 - undefined：声明了变量，但是没有赋值
 - undeclared：没有声明变量就直接使用
@@ -590,6 +611,11 @@ async function func(){
     let p5 = await promise4()
 }
 ```
+
+#### async/await相比于Promise的优势
+
+* 代码读起来更加同步，摆脱链式调用，非常优雅
+* 使用`try/catch`错误处理更加友好，更便于调试
 
 #### **循环中使用异步**
 
@@ -980,12 +1006,75 @@ Object.defineProperty(vue.prtotype, '$route', {
 | `document.body.scrollLeft`   | 文档被滚动右去的时候（即滚动条往右滚动的距离）               |
 | `document.body.scrollTop`    | 文档被滚动上去的时候（即滚动条往上滚动的距离）               |
 
+### **例：搜索**
 
+~~~js
+input.addEventListener("keyup", (function(e){ //这是一个自运行函数
+    let t = null;
+    return function(){ //真正的事件函数在这里
+        clearTimeout(t); //每次触发，都把前面的定时器关闭，尽管第一次定时器并不存在
+        t = setTimeout(function(){ //开启新的定时器
+            //ajax(...); 发送请求到服务器
+        }, 300);
+    }
+})())
+~~~
 
+### **例2**
 
-﻿
+```js
+    <input type="text" />
 
+      function debounce(fn, time) {
+        return function () {
+          // 定义timeout存储时间
+          let timeout;
+          // 如果操作继续那就清除时间
+          clearTimeout(timeout);
+          // 设置定时函数，当停止操作一段时间后，调用函数
+          timeout = setTimeout(() => {
+            // 调用的函数
+            fn();
+          }, time);
+        };
+      }
 
+      function sayHi() {
+        console.log("防抖成功");
+      }
+      // 绑定标签
+      var input = document.querySelector("input");
+      // 调用防抖
+      input.addEventListener("input", debounce(sayHi, 500));
+```
+
+## **函数节流**
+
+应用场景
+\- DOM 元素的拖拽（mousemove）
+
+\- 射击游戏在单位时间只能发射一颗子弹（mousedown/keydown）
+
+\- Canvas 模拟画板功能（mousemove）
+
+\- 懒加载，在滚动过程中判断是否需要加载图片（scroll）
+
+\- 页面滚动到底部加载更多（scroll）
+
+### **例：页面滚动**
+
+~~~js
+window.onscroll = (function(){
+   let lastTime = 0; 
+   return function(){
+       let now = new Date().getTime(); //每次触发事件获取当前时间
+       if( now-lastTime > 300 ){ //若时间间隔大于了300ms
+           lastTime = now;  //执行代码，并重新计时
+           //你的代码
+       }
+   }
+})()
+~~~
 
 
 ﻿

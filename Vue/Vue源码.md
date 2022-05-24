@@ -26,7 +26,6 @@ function trigger(key){                /*触发函数*/
 ```
 
 * 使用
-* 
 
 ```js
 let product = { price:5, quantity:2 }

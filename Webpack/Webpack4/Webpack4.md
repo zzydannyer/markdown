@@ -8,7 +8,7 @@ webpack-dev-server@3.11.2
 -D
 ```
 
-* 简单运行.vue文件
+* 简单运行`.vue`文件
 
 ```shell
 npm install 
@@ -58,7 +58,7 @@ sass@1.45.2
 ```json
 "scripts": {
     "build": "webpack --mode production",
-    "serve":"npx webpack-dev-server"
+    "serve":"npx webpack-dev-server --open chrome"
   },
   "dependencies": {},
 "devDependencies": {
@@ -112,15 +112,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MniCssExtractPlugin = require('mini-css-extract-plugin')
 const optimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 
-process.env.NODE_ENV = 'production' //指定环境变量的值, postcss兼容时会选择生产的配置
+//指定环境变量的值, postcss兼容时会选择生产的配置
+process.env.NODE_ENV = 'production' 
 
 module.exports = {
-  mode: 'development', //开发模式
-  entry: './src/index.js', //入口文件
+  //开发模式
+  mode: 'development',
+  //入口文件
+  entry: './src/index.js', 
+  devtool: 'eval-source-map'
+  //Source Map里存储着位置信息。使用Suorce Map直接显示原始代码，而不是转换后的代码。
+  //在开发环境下Source Map是默认开启的。但是存在定位代码和源代码位置不一致的情况。需要在webpack.config.js中的**devtool节点**添加如下配置，解决该问题。  
+  //在生产环境，为了安全，可以只定位文件，暴露行数，而不展示源码。将devtool的值设置为'nosource-souce-map'
   devServer: {//开发服务的配置,只打包到内存,不做实际打包,作用于开发时实时预览
     contentBase: resolve(__dirname, 'dist'),//打包后的文件路径,跟出口文件路径一致
     compress: true,//是否开启gzip 压缩
     port: '80',//启动后的端口
+    host: '127.0.0.1',
     index: 'index.html',//索引文件的文件名,默认就是index.html,配置一下应该启动会快一点..
     publicPath: '/',//静态资源访问路径 默认就是/ => 比如: ip/build.js (文档有说明)
   },
@@ -141,6 +149,7 @@ module.exports = {
       //或者
       {
         test: /\.less$/,//不使用scss是因为这个版本node-sass安装爱报错,
+        use:[
            // 'style-loader', 将出口文件里的css插入到html中的style标签中
            MniCssExtractPlugin.loader,//3. 将出口文件中的css内容编译成css文件,并引入html文件中
            'css-loader',//2. 将入口文件中引入的css文件编译成css内容放入到出口文件
@@ -177,7 +186,18 @@ module.exports = {
           name: 'asstes/[name].[hash:6].[ext]', //打包后的文件名
         },
       },
-    ],
+      //   字体
+      {
+        test: /\.(woff2?|eot|ttf|otf)$/i,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+            name: 'fonts/[name].[ext]'
+          }
+        }
+      }
+    ],   
   },
   plugins: [
     new HtmlWebpackPlugin({
