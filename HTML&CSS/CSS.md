@@ -1,14 +1,57 @@
 # CSS
 
-## css3新特性
+#### css3特性
 
 * `flex`、`animation`、`transform`、`border-radius`、`box-shadow`、`opacity`
 
-## 背景毛玻璃的效果
+### 选择器
+
+* 序号选择器`:nth-child(an+b)`
+
+  |                         |                        |
+  | :---------------------- | ---------------------- |
+  | `:first-child`          | 第一个子元素           |
+  | `:last-child`           | 最后一个子元素         |
+  | `:nth-child(3)`         | 第三个子元素           |
+  | `:nth-last-child(3)`    | 倒数第三个子元素       |
+  | `:nth-of-type(3)`       | 第三个某类型的子元素   |
+  | `:nth-last-of -type(3)` | 倒数抵挡额某类型子元素 |
+
+  * `2n+1`等价`odd`，表示奇数
+  * `2n`等价`even`，表示偶数
+
+### 伪类
+
+* 伪类指元素的特殊状态
+
+  + `a:link`		表示没有被访问的状态
+  + `a:visited `  表示访问后的状态
+  + `a:hover  `   表示鼠标悬停的状态
+  + `a:active   `  表示正被激活的状态
+
+  |             |                    |
+  | ----------- | ------------------ |
+  | `:empty`    | 空标签             |
+  | `:focus`    | 获得焦点的表单元素 |
+  | `:enabled`  | 有效的表单元素     |
+  | `:disabled` | 无效的表单元素     |
+  | `:checked`  | 已勾选的表单元素   |
+  | `:root`     | 根元素。即`<html>` |
+
+### 伪元素
+
+* `::after`，`::before`表示在标签的原有元素之前或者之后添加元素。
+* `::selection `  表示被鼠标选中部分的样式
+* `::first-letter ` 表示第一个文字
+* `::first-line ` 表示第一行文字
+
+
+
+#### 背景毛玻璃的效果
 
 * `filter：blur()`
 
-## 重绘Repaint / 回流Reflow
+### 重绘Repaint / 回流Reflow
 
 1. 重绘：`元素外观改变`触发，不会重新布局
    * `outline`、`background-color`
@@ -32,16 +75,16 @@
 * 动画元素放在`z-index`较高的图层
 * 编写动画时用`requestAnimationFrame`
 
-## padding和margin的区别
+### padding和margin的区别
 
 * 作用对象不同，padding 作用于**自身**，margin作用于**外部**
 
-## vw和百分比的区别
+### vw和百分比的区别
 
 * 百分比会继承父级
 * vw只和设备宽度有关系
 
-## position属性
+### position属性
 
 - `static`：默认
 - `relative`：相对于自身
@@ -49,11 +92,11 @@
 - `fixed`：相对于屏幕窗口进行定位
 - `sticky`：用来实现吸顶效果
 
-## JS实现position：sticky
+### JS实现position：sticky
 
 使用`getBoundingClientRect`或者`IntersectionObserver`计算指定元素位置，到达一定距离更改指定元素定位为fixed，从而实现sticky的效果
 
-## 快速居中对齐
+### 快速居中对齐
 
 * flex
 
@@ -88,13 +131,13 @@
 
 
 
-## CSS加载会造成阻塞吗
+### CSS加载会造成阻塞吗
 
 1. 不阻塞 DOM 解析
 2. 会阻塞 DOM 渲染
 3. 会阻塞 JS 执行
 
-## 渐变阴影
+### 渐变阴影
 
 * 通过伪元素设置渐变阴影
 
@@ -117,34 +160,13 @@
 }
 ```
 
-## 响应式菜单按钮
+### link和@import
 
-```css
-<style>
-    ul,
-    input{
-        display: none;
-    }
-    input:checked + ul {
-        display: block;
-    }
-    @media( min-width:900px ){
-        span{
-            display: none;
-        }
-    }
-</style>
++ `link`在加载页面时同时加载，`@import`在页面加载完毕后加载
++ `link`是HTML提供的标签，`@import`是css的语法规则，只能加载在==style标签内==和==css文件中==
++ `link`支持js控制DOM改变样式，而`@import`不支持
 
-<label for="menu">
-    <span>菜单</span>
-</label>
-<input id="menu" type="checkbox" />
-<ul>
-    <li></li>
-    <li></li>
-    <li></li>
-</ul>
-```
+
 
 ## Flex
 
@@ -212,7 +234,7 @@ obj{
 - rem：相对于`<html>`标签的`font-size`决定大小，例如html标签font-size为14px，则2rem === 28px
 - em：相对于自身的font-size去决定大小，自身没有font-size则继承祖先级元素的font-size
 
-## **阻止旋转屏幕时自动调整字体大小**
+### **阻止旋转屏幕时自动调整字体大小**
 
 ```css
 html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
@@ -220,7 +242,7 @@ html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
 }
 ```
 
-## margin:0 auto;失效
+### margin:0 auto;失效
 
 1. **没有指定宽度**
 

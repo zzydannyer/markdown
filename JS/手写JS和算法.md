@@ -1,4 +1,4 @@
-## 手写instanceof
+### 手写instanceof
 
 ```js
 class Person {
@@ -24,11 +24,11 @@ function myInstanceOf(obj, className) {
 console.log(myInstanceOf(person, Array));
 ```
 
-## 手写Call
+### 手写Call
 
 ```javascript
-Function.prototype.myCall = function( ) {
-    const args = Array.from( arguments ) /*把传参转化为真正的数组*/
+Function.prototype.call = function( ) {
+    const args = Array.from(arguments) /*把传参转化为真正的数组*/
     const t = args.shift()         /*拿到数组第一项，会改变原数组*/
     const t.fn= this               /*拿到调用myCall的方法*/
     const res = t.fn(...args)      /*改变this指向*/
@@ -37,7 +37,24 @@ Function.prototype.myCall = function( ) {
 }
 ```
 
-## 手写Promise
+### 手写bind
+
+```js
+Function.prototype.bind = function(){
+    const args  = Array.prototype.slice.call(arguments)
+    const t = args.shift()
+    const self = this
+    return {
+        function(){
+            return self.apply(t,args)
+        }
+    }
+}
+```
+
+
+
+### 手写Promise
 
 ~~~js
 class HD {
@@ -176,7 +193,7 @@ class HD {
 }
 ~~~
 
-## 修改this指向
+### 修改this指向
 
 方案1：
 
@@ -208,7 +225,7 @@ function bindThis(f, oTarget) {
 
 ## 初级算法
 
-#### 1. 生成 0 到指定值的数组
+### 1. 生成 0 到指定值的数组
 
 ```js
 const getArr = (startNum, endNum) => {
@@ -224,7 +241,7 @@ getArr(1, 4)
 
 
 
-#### 2. 获取数组最大值
+### 2. 获取数组最大值
 
 ```js
 const getArrMaxVal = (arr) => {
@@ -234,7 +251,7 @@ const getArrMaxVal = (arr) => {
 getArrMaxVal([1,6,3,4,6])
 ```
 
-#### 3. 获取数组的最小值
+### 3. 获取数组的最小值
 
 ```js
 const getArrMinVal = (arr) => {
@@ -244,7 +261,7 @@ const getArrMinVal = (arr) => {
 getArrMinVal([1,6,3,4,6])
 ```
 
-#### 4. <font color=red>数组去重 *</font>
+### 4. <font color=red>数组去重 *</font>
 
 ```js
 //1. 使用filter过滤
@@ -286,7 +303,7 @@ String.prototype.repeat = function(n){
 
 ## 中级算法
 
-#### 1. 斐波那契数列
+### 1. 斐波那契数列
 
 >  Fibonacci sequence：0、1、1、2、3、5、8、13、21、34…
 
@@ -338,7 +355,7 @@ String.prototype.repeat = function(n){
   fib(6)
   ```
 
-#### 2. 正数组的最大差值
+### 2. 正数组的最大差值
 
 * 要求只能是右边的数减左边的数
 
@@ -351,7 +368,7 @@ const getMaxProfit = (arr) => {
 getMaxProfit([1,8,6,3,7])
 ```
 
-#### 3. <font color=red>冒泡排序 *</font>
+### 3. <font color=red>冒泡排序 *</font>
 
 ```js
 const bubbleSort = (arr) => {
@@ -368,7 +385,7 @@ const bubbleSort = (arr) => {
 bubbleSort([10,5,11,7,8,9])
 ```
 
-#### 4. <font color=red>数组交集 *</font>
+### 4. <font color=red>数组交集 *</font>
 
 ```js
 const intersectionFn = (arr1, arr2) => {
@@ -379,7 +396,7 @@ const intersectionFn = (arr1, arr2) => {
 intersectionFn([1,2,3],[2,3,4,5,6])
 ```
 
-#### 5. <font color=red> 数组补集 *</font>
+### 5. <font color=red> 数组补集 *</font>
 
 * arr1中有arr2中没有或arr2中有arr1中没有的部分
 
@@ -392,7 +409,7 @@ const complementFn = (arr1, arr2) => {
 complementFn([1,2,3],[2,3,4,5,6])
 ```
 
-#### 6. <font color=red> 数组并集 *</font>
+### 6. <font color=red> 数组并集 *</font>
 
 * arr1和arr2共有的部分并去重
 
@@ -406,7 +423,7 @@ const unionFn = (arr1, arr2) => {
 unionFn([1,2,3],[2,3,4,5,6])
 ```
 
-#### 7. 将对象数组中的key，value转换成对象键值对
+### 7. 将对象数组中的key，value转换成对象键值对
 
 ```js
 const data = [
@@ -430,7 +447,7 @@ const processFn = (data) => {
 processFn(data)
 ```
 
-#### 8. <font color=red>数组求和 *</font>
+### 8. <font color=red>数组求和 *</font>
 
 ```js
 const arrSum = (arr) => {

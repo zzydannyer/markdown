@@ -1089,6 +1089,12 @@ export default {
 
 ## Vue3
 
+### 多根节点
+
+* vue2只能有一个根，vue3支持多根节点
+
+
+
 ### 插件
 
 + 语法:
@@ -1393,3 +1399,207 @@ export default new Vuex.Store({
     plugins :debug ? [ createrLogger() ] : []
 })
 ```
+
+# 最佳实践
+
+### 编码风格
+
+* 命名组件使用”多词“避免和HTML元素冲突
+
+  ```jsx
+  export default {
+    name: 'TodoItem',
+    // ...
+  }
+  ```
+
+* 组件`data`必须为函数
+
+  ```jsx
+  export default {
+    data () {
+      return {
+        foo: 'bar'
+      }
+    }
+  }
+  ```
+
+* `prop`定义尽量详细
+
+  ```jsx
+  props: {
+    status: {
+      type: String,
+      required: true,
+      validator: function (value) {
+        return [
+          'syncing',
+          'synced',
+          'version-conflict',
+          'error'
+        ].indexOf(value) !== -1
+      }
+    }
+  }
+  ```
+
+* `v-for`设置`key`
+
+  ```jsx
+  <ul>
+    <li v-for="todo in todos" :key="todo.id">
+      {{ todo.text }}
+    </li>
+  </ul>
+  ```
+
+* 避免`v-if`和`v-for`一起使用
+
+  ```jsx
+  <ul v-if="shouldShowUsers">
+    <li v-for="user in users" :key="user.id">
+      {{ user.name }}
+    </li>
+  </ul>
+  ```
+
+* 组件样式作用域
+
+  1. `scoped`
+
+  2. CSS Modules
+
+     ```jsx
+     <template>
+       <button :class="[$style.button, $style.buttonClose]">X</button>
+     </template>
+      
+     <style module>
+     .button {
+       border: none;
+       border-radius: 2px;
+     }
+     
+     .buttonClose {
+       background-color: red;
+     }
+     </style>
+     ```
+
+* 私有`property`名
+
+  ```jsx
+  var myGreatMixin = {
+    methods: {
+      $_myGreatMixin_update: function () {
+        // ...
+      }
+    }
+  }
+  ```
+
+  ```jsx
+  var myGreatMixin = {
+    methods: {
+      publicMethod() {
+        // ...
+        myPrivateFunction()
+      }
+    }
+  }
+  
+  function myPrivateFunction() {
+    // ...
+  }
+  
+  export default myGreatMixin
+  ```
+
+* 自闭和组件
+
+  ```jsx
+  <!-- 在单文件组件、字符串模板和 JSX 中 -->
+  <MyComponent/>
+  <!-- 在 DOM 模板中 -->
+  <my-component></my-component>
+  ```
+
+* `prop`大小写
+
+  ```jsx
+  props: {
+    greetingText: String
+  }
+  <WelcomeMessage greeting-text="hi"/>
+  ```
+
+* `attribute`元素分多行撰写
+
+  ```jsx
+  <img
+    src="https://vuejs.org/images/logo.png"
+    alt="Vue Logo"
+  >
+  ```
+
+* 复杂计算属性分割为更简单的 `property`
+
+  ```jsx
+  computed: {
+    basePrice: function () {
+      return this.manufactureCost / (1 - this.profitMargin)
+    },
+    discount: function () {
+      return this.basePrice * (this.discountPercent || 0)
+    },
+    finalPrice: function () {
+      return this.basePrice - this.discount
+    }
+  }
+  ```
+
+* 统一指令缩写
+
+  ```jsx
+  <input
+    v-bind:value="newTodoText"
+    :placeholder="newTodoInstructions"
+  >
+  <input
+    v-on:input="onInput"
+    @focus="onFocus"
+  >
+  <template v-slot:header>
+    <h1>Here might be a page title</h1>
+  </template>
+  
+  <template #footer>
+    <p>Here's some contact info</p>
+  </template>
+  ```
+
+
+# 性能优化
+
+* 代码分割
+
+* 服务端渲染
+
+* 组件缓存
+
+* 长列表优化
+
+* 路由懒加载
+
+  * 有效拆分App尺寸，访问时异步加载
+
+  ```js
+  const router = createRouter({
+      routes: [
+          { path:'/foo', component: () => import('./Foo.vue') }
+      ]
+  })
+  ```
+
+  

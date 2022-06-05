@@ -71,6 +71,17 @@ Boolean(' ')	//true
 {}+[] //0
 ```
 
+### instanceof
+
+* `instanceof` 用于检测构造函数的 `prototype` 是否出现在某个实例对象的原型链上
+
+### 预编译
+
+1. 创建AO对象
+2. 找到==形参==和==变量声明==，作为AO对象的属性名，值为==undefined==
+3. 实参和形参相统一
+4. 找到==函数声明==，名称一致则会覆盖变量声明
+
 ### 作用域链
 
 JS在执行过程中会创造可执行上下文，其中包含外部环境的引用
@@ -188,13 +199,93 @@ let n = this.n || n
 * 将变量始终存在内存中，可以封装私有属性和方法
 * 耗费内存、会造成内存溢出
 
-### localStorage与sessionStorage
+### 本地存储
 
-- 生命周期不同：
+#### cookie
 
-  `localStorage`一直存在浏览器，除非用户手动清除
 
-  `sessionStorage`生命周期结束于浏览器或者tab页的关闭
+| 名称         | 含义                                                         |
+| ------------ | ------------------------------------------------------------ |
+| `name`       | 名称                                                         |
+| `value`      | 值                                                           |
+| `comment`    | 描述信息                                                     |
+| `domain`     | 可访问该`cookie`的域名                                       |
+| `expires`    | 过期的具体某一时间                                           |
+| `maxAge`     | 多少秒后过期                                                 |
+| `path`       | 使用路径                                                     |
+| `secure`     | 是否使用安全协议传输                                         |
+| `version`    | 使用的版本号                                                 |
+| `isHttpOnly` | 让`cookie`无法通过`JS`拿到，包括`Document.cookie`、`XMLHttpRequest`和`RequestAPI`，只有发出请求时才会携带`cookie` |
+
+* ==Cookie登录==：
+
+  1. 客户端发送登录请求
+  2. 服务端响应请求并设置响应头`set-cookie`
+  3. 客户端发送请求且请求头自动携带`cookie`
+  4. `cookie`验证通过正常响应请求
+
+  > * `Cookie`的特点
+  >   1. 字符编码为`unicode`，不支持存储中文
+  >   2. 不可跨域，如果设置了`domain`则可在一级和二级域名共享
+  > * 优点
+  >   1. 兼容性好
+  >   2. 浏览器发送请求自动携带，容易实现
+  > * 缺点
+  >   1. 增加请求体积，浪费性能
+  >   2. 容易受到`CSRF`攻击（跨站域请求伪造）
+  >   3. 存在客户端不够安全
+
+* ==Session登录==：
+
+  1. 客户端发送登录请求
+
+  2. 服务端响应请求并设置响应头`set-cookie`，包含了一个`sessionId`
+
+     * `sessionId`格式：
+
+       `Set-Cookie: value[; expires=date][; domain=domain][; path=path][; secure]`
+
+  3. 客户端发送请求且请求头自动携带`cookie`，服务端通过`sessionId`查找`session`，没找到创建一新的`session`，并返回新的`sessionId`
+
+  4. `cookie`验证通过正常响应请求
+
+  > * `session`是基于`cookie`实现的
+  >   1. `cookie`只支持字符串数据，`session`支持任意数据
+  >   2. `cookie`可以存储较长时间，`session`存储时间短
+  >   3. `cookie`存储4kb，`session`存储不限制
+  > * 优点
+  >   1. 查询速度更快，因为是个绘画，在内存中操作
+  >   2. 存在服务端更安全
+  > * 缺点
+  >   1. 增加服务端资源消耗，每个客户端都会创建`session`，包含用户所有信息
+
+* ==Token==：
+
+  1. 客户端发送登录请求
+
+  2. 服务端生成`token`，其中带有用户id等信息
+
+  3. 客户端发送请求且并把存储的`token`放到请求头中
+
+  4. `token`验证通过正常响应请求
+
+  > * `token`是加密字符串，体积很小，通常使用`uid`（用户唯一标识）、时间戳、签名以及其它参数加密而成，可以自由操作存储位置
+  > * 优点
+  >   1. 安全，用户`id`就算被截取也没用
+  >   2. 不占用服务器资源，`token`只存了用户`id`
+  >   3. 跨域请求较为方便，多台服务器可以共用一个`token`
+  > * 缺点
+  >   1. 查询速度慢，每次都需要通过`token`中的用户`id`查询数据库
+  
+  
+
+#### 对比
+
+| 名称           | 容量 | 可随请求发送 | 易用性   | 生命周期                         |
+| -------------- | ---- | ------------ | -------- | -------------------------------- |
+| cookie         | 4kb  | 是           | 需要封装 |                                  |
+| localstorage   | 5mb  | 否           |          | 一直存在浏览器，除非用户手动清除 |
+| sessionstorage | 5mb  | 否           |          | 结束于浏览器或者tab页的关闭      |
 
 ### 内存泄漏
 
@@ -223,8 +314,11 @@ let n = this.n || n
 
 `this`总是指向函数的直接调用者
 
-* 指向构造函数实例化`new`出来的对象
+* 指向构造函数实例化`new`出来的对象（class的this指向实例）
+
 * 指向事件触发的对象
+
+  
 
 ### 箭头函数
 
@@ -473,7 +567,7 @@ let result = arr.some((item,index,arr)=>{
 //true
 ```
 
-### 数组和对象的遍历方法
+### 遍历器
 
 * `for`
 * `for in`
@@ -520,9 +614,26 @@ let result = arr.some((item,index,arr)=>{
 * 深克隆 - 循环递归
 
   ```js
-  
+  function deepClone(obj={}){
+      if(typeof obj !== 'object' || obj == null){
+          return obj
+      }
+      let result 
+      if(obj instanceOf Array){
+          result = []
+      }else{
+          result = {}
+      }
+      for(let key in obj){
+          // hasOwnProperty 检查自己是否拥有该属性，而不是原型拥有
+          if(obj.hasOwnProperty(key)){
+              result[key] = deepClone(obj[key])
+          }
+      }
+      return result
+  }
   ```
-
+  
   
 
 
@@ -617,7 +728,7 @@ async function func(){
 * 代码读起来更加同步，摆脱链式调用，非常优雅
 * 使用`try/catch`错误处理更加友好，更便于调试
 
-#### **循环中使用异步**
+#### 循环中使用异步
 
 ```js
 function delayLog(item){
@@ -713,56 +824,24 @@ prototype有两个属性：
 
 ![宏任务微任务](C:\Users\14046\Desktop\DOC\images\宏任务微任务.png)
 
-## 实用方法
+# 实用方法
 
 ### 首字母大写
 
 ```js
 firstUpperCase(){
-    let [first, ...rest] = this.dataType
+    let [first, ...rest] = this.fullName
     return first.toUpperCase() + rest.join('')
 }
+
+firstUpperCase() {
+    return this.fullName.split(' ').map((word)=>{
+      return word[0].toUpperCase() + word.slice(1)
+    }).join(' ')
+  }
 ```
 
 
-
-### 循环中使用异步
-
-```js
-function delayLog(item){
-    return new Promise(resolve => {
-        setTimeout(() = > resolve(item), 1000)
-    })
-}
-
-function processArr(arr){
-    arr.forEach(async item => {
-        console.log(await delayLog(item))
-    })
-    console.log('打印完毕')
-}
-/*
-打印完毕
-...arr
-*/
-
-async function processArr(arr){
-    for(let item of arr){
-        console.log(await delayLog(item))
-    }
-    console.log('打印完毕')
-}
-/*
-打印完毕
-...arr
-*/
-```
-
-* ES9` for await of`
-
-```js
-for await (const item of arr){}
-```
 
 ### 动态添加类名
 
@@ -1006,81 +1085,48 @@ Object.defineProperty(vue.prtotype, '$route', {
 | `document.body.scrollLeft`   | 文档被滚动右去的时候（即滚动条往右滚动的距离）               |
 | `document.body.scrollTop`    | 文档被滚动上去的时候（即滚动条往上滚动的距离）               |
 
-### **例：搜索**
-
-~~~js
-input.addEventListener("keyup", (function(e){ //这是一个自运行函数
-    let t = null;
-    return function(){ //真正的事件函数在这里
-        clearTimeout(t); //每次触发，都把前面的定时器关闭，尽管第一次定时器并不存在
-        t = setTimeout(function(){ //开启新的定时器
-            //ajax(...); 发送请求到服务器
-        }, 300);
-    }
-})())
-~~~
-
-### **例2**
+### 防抖
 
 ```js
-    <input type="text" />
-
-      function debounce(fn, time) {
-        return function () {
-          // 定义timeout存储时间
-          let timeout;
-          // 如果操作继续那就清除时间
-          clearTimeout(timeout);
-          // 设置定时函数，当停止操作一段时间后，调用函数
-          timeout = setTimeout(() => {
-            // 调用的函数
-            fn();
-          }, time);
-        };
-      }
-
-      function sayHi() {
-        console.log("防抖成功");
-      }
-      // 绑定标签
-      var input = document.querySelector("input");
-      // 调用防抖
-      input.addEventListener("input", debounce(sayHi, 500));
+function debounce(fn, wait){
+    let timer = null
+    return () => {
+         //每次触发，都把前面的定时器关闭，尽管第一次定时器并不存在
+        if(timer) clearTimeout(timer);
+        timer = setTimeout(（） => {fn()}, wait)
+	}
+}
 ```
 
-## **函数节流**
+### 节流
 
-应用场景
-\- DOM 元素的拖拽（mousemove）
+```js
+function throttle(fn, wait) {
+      let start = 0
+      return () => {
+        const end = new Date().getTime()
+        if (end - start > wait) {
+          fn()
+          start = end
+        }
+      }
+    }
+```
 
-\- 射击游戏在单位时间只能发射一颗子弹（mousedown/keydown）
+#### 应用场景
 
-\- Canvas 模拟画板功能（mousemove）
+1. DOM 元素的拖拽`mousemove`
 
-\- 懒加载，在滚动过程中判断是否需要加载图片（scroll）
+2. 射击游戏在单位时间只能发射一颗子弹`mousedown/keydown`
 
-\- 页面滚动到底部加载更多（scroll）
+3. Canvas 模拟画板功能`mousemove`
 
-### **例：页面滚动**
+4. 懒加载，在滚动过程中判断是否需要加载图片`scroll`
 
-~~~js
-window.onscroll = (function(){
-   let lastTime = 0; 
-   return function(){
-       let now = new Date().getTime(); //每次触发事件获取当前时间
-       if( now-lastTime > 300 ){ //若时间间隔大于了300ms
-           lastTime = now;  //执行代码，并重新计时
-           //你的代码
-       }
-   }
-})()
-~~~
-
-
-﻿
-﻿
-﻿
-﻿
+5. 页面滚动到底部加载更多`scroll`
+   ﻿
+   ﻿
+   ﻿
 
 
 ﻿
