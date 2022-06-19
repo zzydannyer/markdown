@@ -129,103 +129,56 @@ export default {
 
 `created`、`beforeMount`、`mounted`
 
-### Vue2响应式
+### Vue响应式
 
-* 通过==数据劫持==、==发布订阅==的方式实现双向绑定
-* Vue2使用`Object.defineProperty`，Vue3使用Proxy，性能更好，不需要循环遍历
+#### vue2
+
+* 通过==数据劫持==、==观察者模式==的方式实现
+
+* Vue2使用`Object.defineProperty`
+
 * Vue2响应式缺点：
   1. 深度监听需要一次性全部递归，性能不好
   2. 无法新增和删除响应式属性，需要使用`Vue.set`、`Vue.delete`
   3. 无法对数组进行监听
+  
+  ```js
+  const obj = {
+      a: 'a',
+      b: 'b'
+  }
+  
+  const defineReactive = (target, key, value) => {
+      Object.defineProperty(target, key, {
+          get() {
+              return value
+          },
+          set(newValue) {
+              value = newValue
+          }
+      })
+  }
+  
+  for (let key in obj) {
+      defineReactive(obj, key, obj[key])
+  }
+  ```
 
-```js
-let data = {
-    user:"name",
-    age:30
-}
+#### Vue3
 
-//实例
-let _this = {}
+* Vue3使用`Proxy`，性能更好，不需要循环遍历
 
-for(let item in data){
-    Object.defineProperty(_this, item, {
-            get(){
-                return data['item']
-            },
-            set(newVal){
-                //不可直接修改_this，会出现死循环
-                //修改data中的数据
-                data[item] = newVal
-            }
-        }
-    )
-}
-```
-
-```js
-/* 订阅器模型 */
-let Dep = {
-    clientList:{} /* 容器 */
-    /* 添加订阅 */
-    listen:function(key,fn){
-       (this.clientList[key]||(this.clientList[key]=[])).push(fn);/* 短路表达式 */
-    }
-	/* 添加订阅 */
-	trigger:function(){
-        let key = Array.prototype.shift.call(arguments),
-            fns = this.clientList[key];
-        if(!fns||fns.length===0){
-            return false
-        }
-        for(let i=0, fn;fn =fns[i++];){
-            fn.apply(this, arguments)
-        }
-    }
-}
-/* 数据劫持 */
-let dataBase = function({data, tag, datakey, selector}){
-    let value = '',	/* 获取响应数据的值*/
-        el = document.querySelector(selector); /* 获取元素 */
-    
-    Object.defineProperty(data, datakey,{
-        get:function(){
-            return value;
-        },
-        set:function(val){
-            value = val
-            /* 发布 */
-            Dep.trigger(tag, val)
-        }
-    })
-    /* 订阅 */
-    Dep.listen(tag, function(text){
-        el.innerHTML = text
-    })
-}
-
-/* 使用 */
-let obj = {}
-dataBase({
-    data:obj,
-    tag:'tag1',
-    datakey:'key1',
-    selector:'.box-1'
-})
-dataBase({
-    data:obj,
-    tag:'tag2',
-    datakey:'key2',
-    selector:'.box-2'
-})
-obj.key1 = 'value1'
-obj.key2 = 'value2'
-```
-
-
-
-
-
-### Vue3响应式
+  ```js
+  new Proxy(obj, {
+      get(target, prop, receiver) {
+          return target[prop]
+      },
+      set(target, prop, value, receiver) {
+          target[prop] = value
+          return true
+      }
+  })
+  ```
 
 * 基本类型值要用`ref`来包装，引用数据类型需要用`reactive`来包装
 * 使用`proxy`代理对象，因为proxy只能接收对象作为参数，所以==基本类型值==被转化为了`{value：值}`
@@ -622,7 +575,7 @@ computed: {
 
 * 通过`Vuex`传值
 
-* 通过`eventBus`传值
+* 通过`eventBus`传值（发布订阅模式）
 
   1. 创建一个vue的实例，并且导出为bus。
 
@@ -1093,7 +1046,37 @@ export default {
 
 * vue2只能有一个根，vue3支持多根节点
 
+* vue2中vdom是单根树形结构，patch方法从根节点开始遍历，它要求只有一个根节点
 
+  ```js
+  //直接获取，没有考取数组的可能性
+  const { type, ref, shapeFlag } = n2
+  ```
+
+* vue3引入了`Fragement`概念，如果发现有多根，会创建一个Fragement节点作为多根节点的父节点，patch直接遍历所有的这些子节点
+
+  ```ts
+  mountChildren(n2.children as VNodeArrayChildren,...)
+  ```
+
+  
+
+### ref 和 reactive
+
+* 两者均用于构造响应式数据
+
+* `ref`：封装`RefImpl`类，并设置`get value`/`set value`，拦截用户的访问
+
+  * 处理单值、原始值的响应式，接收`inner value`，返回响应式`Ref`对象
+
+  * 可以是数组、对象，内部依然是`reactive`实现响应式
+  * 在`JS`中需要加上`.value`，在视图中不需要
+
+* `reactive`：使用`Proxy`代理对象并拦截操作
+
+  * 处理对象类型的响应式，返回响应式代理对象
+  * 接收`Ref`对象会自动脱`Ref`
+  * 使用`...`会使其失去响应性，需使用`toRefs()`将其转化为`Ref`对象
 
 ### 插件
 
@@ -1112,19 +1095,7 @@ export default {
 
 + `app.config.globalProperties.$http = axios  ` 把属性或者方法挂在到vue的实例上面。
 
-### 性能优化
 
-1. 合理使用v-show和v-if
-2. 合理使用computed
-3. v-for时加key，以及避免和v-if同时使用
-4. 自定义事件、DOM事件及时销毁
-5. 合理使用异步组件
-6. 合理使用keep-alive
-7. data层级不要太深
-8. 使用vue-loader在开发环境做模板编译（预编译）
-9. webpack层面的优化
-10. 前端通用的性能优化，如图片懒加载使用
-11. SSR
 
 # VueRouter
 
@@ -1230,9 +1201,38 @@ export default {
      this.$route.query.id
      ```
 
-     
+### <a id="router-import">路由懒加载</a>
 
-  
+* 打包构建应用时，JS包会非常大，影响页面加载，需要利用路由懒加载把不同路由对应的组件分割成不同的代码块，被访问到时才加载
+
+  ```js
+  //webpackChunkName把若干路由分割到某些代码块中
+  { 
+      path:'/user/:id'}, 
+      component: () => import (/* webpackChunkName:"user" */  './view/userDetails' )
+  }
+  ```
+
+  * `vite`中结合`rollupOptions`定义分块
+
+  ```js
+  export default defineConfig({
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'group-user': [
+              './src/UserDetails',
+              './src/UserDashboard',
+              './src/UserProfileEdit',
+            ],
+          },
+      },
+    },
+  })
+  ```
+
+  > **不要**在路由中使用[异步组件](https://v3.vuejs.org/guide/component-dynamic-async.html#async-components)。路由组件本身就是动态导入的。
 
 ### 动态路由
 
@@ -1249,7 +1249,7 @@ export default {
 
 
 
-### 导航钩子/导航守卫
+### 导航守卫
 
 * 全局钩子
 
@@ -1332,6 +1332,73 @@ export default{
 
 ```
 
+### Module
+
+* 项目规模变大需要，通过模块方式拆分开来维护，防止`store`对象过于庞大臃肿
+
+  ```js
+  const moduleA ={
+      state: ()=>({...}),
+      mutations: {...},
+      actions: {...},
+      getters: {...}
+  }
+  const moduleB = {...}
+  ```
+
+  * 创建store时通过modules组织多个模块
+
+  ```js
+  const store = createStore({
+  	modules:{
+  		a: moduleA,
+          b: moduleB
+  	}
+  })
+  ```
+
+  * 访问状态需要加上子模块名称
+
+  ```js
+  store.state.a //moduleA的状态
+  store.state.b //moduleB的状态
+  ```
+
+  * 默认情况下`getters`、`mutations`、`actions`在全局命名空间
+
+  ```js
+  store.getters.function
+  store.commit('function')
+  store.dispatch('function')
+  ```
+
+  * 可以通过`namespaced`来设置命名空间
+
+  ```js
+  const moduleA ={
+  	namespaced: true,
+      getters:{
+          function(){}
+      }
+  	...
+  	modules:{
+  		post:{
+  			namespaced: true,getters:{
+          		function(){}
+      		}	
+  			...
+  		}
+  	}
+  }
+  
+  store.getters['moduleA/funciton']
+  store.getters['moduleA/post/funciton']
+  ```
+
+  
+
+
+
 ### 状态持久化
 
 * 一般用本地存储的方案**localstorage**，或是第三方插件
@@ -1399,6 +1466,24 @@ export default new Vuex.Store({
     plugins :debug ? [ createrLogger() ] : []
 })
 ```
+
+# Vite
+
+### 起步
+
+```shell
+# npm 6.x
+$ npm init vite@latest <project-name> --template vue
+
+# npm 7+，需要加上额外的双短横线
+$ npm init vite@latest <project-name> -- --template vue
+
+$ yarn create vite <project-name> --template vue
+
+$ pnpm create vite <project-name> -- --template vue
+```
+
+
 
 # 最佳实践
 
@@ -1579,27 +1664,98 @@ export default new Vuex.Store({
   </template>
   ```
 
-
 # 性能优化
 
-* 代码分割
+### 性能优化
 
-* 服务端渲染
+* 服务端渲染（SSR）/  静态网站生成（SSG）
 
 * 组件缓存
 
+  * `keep-alive`缓存页面，避免重复创建实例，且保留组件状态
+
+  ```jsx
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+       <component :is="Component"></component>
+     </keep-alive>
+  </router-view>
+  ```
+
+  * `v-show`复用DOM，避免复杂组件重复创建
+
 * 长列表优化
 
-* 路由懒加载
+  * 采用虚拟滚动，只渲染少部分区域
+  * `vue-virtual-scroller`
+  * `vue-virtual-scroller-grid`s
 
-  * 有效拆分App尺寸，访问时异步加载
+* [路由懒加载](#router-import)、代码分割
+
+  * 有效拆分App尺寸，分包打包，访问时异步加载
 
   ```js
   const router = createRouter({
       routes: [
-          { path:'/foo', component: () => import('./Foo.vue') }
+          { path:'/foo', component: () => import(/* webpackChunkName:"" */ './Foo.vue') }
       ]
   })
   ```
 
+* 其他优化
+
+  * `v-for`和`v-if`不同时使用
+
+  * 不再变化的数据使用`v-once`
+
+    ```jsx
+    <!--single element-->
+    <span v-once>{{msg}}</span>
+    
+    <!--children-->
+    <div v-once>
+        <h1>comment</h1>
+        <p>{{msg}}</p>
+    </div>
+    
+    <!--component-->
+    <component v-once></component>
+    
+    <!--v-for-->
+    <li v-for="i in list" v-once>{{i}}</li>
+        
+    ```
+
+  * 按条件跳过更新时使用`v-memo`
+
+    * 下面例子中列表只会更新选中状态的变化项
+
+    ```jsx
+    <div 
+        v-for="item in list" 
+        :key="item.id" 
+        v-memo="{ item.id===selected }"
+    >
+        ID: {{item.id}}
+        selected: {{ item.id===selected }}
+    </div>
+    ```
+
+  * 自定义事件、DOM事件及时销毁
+
+  * 图片懒加载 `vue-lazyload`
   
+    ```jsx
+    <img v-lazy="xxxx.png">
+    ```
+  
+  * 第三方组件库按需加载(element-plus)
+  
+  * 组件分割策略：较重的状态组件适合拆分
+  
+    * 同时也不宜过度拆分组件，尤其是组件实例消耗大于DOM节点的不需要抽离
+  
+  1. 合理使用computed
+  2. data层级不要太深
+  3. 使用vue-loader在开发环境做模板编译（预编译）
+  5. 前端通用的性能优化，如图片懒加载使用

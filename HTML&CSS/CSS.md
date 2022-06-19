@@ -166,6 +166,27 @@
 + `link`是HTML提供的标签，`@import`是css的语法规则，只能加载在==style标签内==和==css文件中==
 + `link`支持js控制DOM改变样式，而`@import`不支持
 
+## overflow
+
+### 隐藏文字溢出
+
+```css
+.text {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+    word-break: break-all;
+	}
+```
+
+### 不换行
+
+```css
+white-space: nowrap;
+```
+
 
 
 ## Flex
@@ -178,8 +199,6 @@
     align-items: center;
 }
 ```
-
-
 
 ### flex: 1
 
@@ -213,6 +232,212 @@
      grid-gap: /* 垂直间距 */;
 }
 ```
+
+## Grid布局
+
+* 基本属性：
+
+  * 行`row`
+
+  * 列`column`
+  * 容器`container`
+  * 内容`content`
+  * 区域`area`
+  * 项目`item`
+  * 间距`gap`
+
+### 容器属性
+
+#### grid-template-*
+
+* 填写相应属性个数，不填写自动分配充满容器
+
+  ```css
+  grid-template-columns：100px 100px 100px //表示三列
+  grid-template-rows：100px 100px 100px 100px //表示四行
+  ```
+
+* `repeat()`
+
+  ```css
+  grid-template-columns：100px 100px 100px   
+  grid-template-columns：repeat(3, 100px)
+  ```
+
+* `auto-fill`：项目大小固定，容器大小不固定，自动填充
+
+  ```css
+  grid-template-rows：repeat(auto-fill, 100px)
+  ```
+
+* `fr`：fraction表示比例关系
+
+  ```css
+  grid-template-columns：1fr 1fr 1fr 1fr //宽度平均分为四列等分
+  grid-template-columns：repeat（4，1fr）
+  ```
+
+* `minmax()`：设置长度范围
+
+  ```css
+  grid-template-columns：1fr minmax（150px,1fr） //不小于150px
+  ```
+
+* `auto`：根据浏览器的大小自动计算
+
+  ```css
+  grid-template-columns：100px auto 100px  //不写默认auto
+  ```
+
+* 网格线：帮助定位
+
+  ```css
+  grid-template-columns:[c1] 100px [c2] 100px [c3]    //2列3根网格线
+  ```
+
+#### grid-row / column-gap
+
+* 项目间距
+
+  ```css
+  grid-row-gap:20px  //行间距
+  grid-column-gap:20px  //列间距
+  ```
+
+#### grid-template-areas
+
+* 一个区域由单个或多个单元格组成
+
+  ```css
+  grid-template-areas : 'a b c'
+                        'd e f'
+                        'g h i';
+  grid-template-areas : 'a a a'
+                        'b b b'
+                        'c c c';
+  ```
+
+* `.`表示区域不利用
+
+  ```css
+  grid-template-areas : 'a . a'
+                        'b . b'
+                        'c . c';
+  ```
+
+#### grid-auto-flow
+
+* 划分网格线后，容器的子项目自动放置在每一个网格
+
+  ```css
+  grid-auto-flow：row   先行后列
+  grid-auto-flow：column  先列后行
+  ```
+
+* `dense`：提高空间利用率
+
+  ```css
+  grid-auto-flow：row dense
+  
+  ■■■■        ■■■■  □
+  ■■■■  □ ->  ■■■■  □
+  □  □  □     □  □  □
+  ```
+
+#### justify / align-content
+
+* 设置容器内容的对齐方式
+
+  ```css
+  justify-content：center
+  align-content：center
+  ```
+
+#### justify / align-items
+
+* 设置所有项目内容的对齐方式
+
+  ```css
+  justify-items: start | end | center | stretch
+  ```
+
+* 水平垂直居中合并写法
+
+  ```css
+  place-items：center center
+  ```
+
+#### grid-auto-columns / rows
+
+* 设置多余项目的宽高
+
+  ```css
+  grid-auto-rows: 50px; 项目高为50px
+  ```
+
+### 项目属性
+
+#### grid-column / row-start / end
+
+* 单独设置项目的位置，可占用多格空间
+
+  ```css
+  grid-column-start: 1;  ■  ■  □
+  grid-column-end: 3;    ■  ■  □
+  grid-row-start: 1;     □  □  □
+  grid-row-end: 3;
+  ```
+
+* 简写
+
+  ```css
+  grid-column: 1 / 3;  一行平分成三份，占前两份
+  grid-column-star: span 2;从开始方向跨越两个单元格
+  grid-column-end: span 2;从结束方向跨越两个单元格
+  ```
+
+#### grid-area
+
+* 指定项目占哪个区域
+
+  ```css
+  grid-template-areas: 'a a a'
+                       'b b b'
+                       'c c c';
+  grid-area: b; 占满第二行
+  ```
+
+* 可用作`grid-column/row-start/end`的合并
+
+  ```css
+  grid-column-start: 1; 
+  grid-column-end: 3;
+  grid-row-start: 1; 
+  grid-row-end: 3;
+  
+  grid-area: row-start / column-start / row-end / column-end
+  grid-area: 1 / 1 / 3 / 3;
+  ```
+
+#### justify / align-self
+
+* 用于单个项目内容的对齐方式
+
+  ```css
+  justify-self: center;
+  ```
+
+* 简写
+
+  ```css
+  place-self: center center;
+  ```
+
+  
+
+
+
+  
 
 ## rem布局
 

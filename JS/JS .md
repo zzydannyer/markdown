@@ -538,6 +538,27 @@ Array.prototype.push.apply(arr1, arr2)
 /* arr1 = [ 1, 2, 3, 4, 5, 6  ] */
 ```
 
+### 数组API
+
+#### `Array.of(..args)`
+
+* 根据指定==数组项==创建数组
+
+  ```js
+  const arr = Array.of(1, 2, 3, 5, 7)
+  ```
+
+#### `Array.from(arg)`
+
+* 根据给定的==类数组==或==可迭代的对象==创建数组
+
+  ```js
+  const div = document.querySelectAll("div")
+  const arr = Array.from(div) //Array.prototype.slice.call(div)
+  ```
+
+  
+
 ### Filter
 
 * 数组去空

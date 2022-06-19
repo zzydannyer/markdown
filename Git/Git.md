@@ -1,5 +1,10 @@
 # GIT
 
+* 工作区
+* 版本库
+  * 暂存区
+  * 分支
+
 `gitee(github)`中的README.md文件不在本地代码目录中 
 
 执行`git pull --rebase origin master`命令README.md拉到本地
@@ -99,6 +104,14 @@ git mv oldName newName
    ```
 
 3. 在生成的 `.gitignore` 文件里配置要忽略文件目录 如：**node_modules/**
+
+### 撤销 commit
+
+|                            |                                                 |
+| -------------------------- | ----------------------------------------------- |
+| `git reset --soft 版本号`  | 不删除工作区代码，撤销commit，不撤销git add     |
+| `git reset --mixed 版本号` | 不删除工作区代码，撤销commit，==撤销git add==   |
+| `git reset --hard 版本号`  | ==删除工作区代码==，撤销commit，==撤销git add== |
 
 ## 问题报错
 

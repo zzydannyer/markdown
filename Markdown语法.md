@@ -20,7 +20,13 @@
 
 [链接](https://link.zhihu.com/?target=https%3A//www.baidu.com/)：Ctrl+K（先复制链接，然后选中要加链接的文本，按快捷键。Ctrl+左键点击文本可跳转到对应链接）
 
+* 页内跳转
 
+  ```vue
+  [commet](#id)  //引用入口
+  
+  <a id="id">commet</a> //要跳转的位置(锚点)
+  ```
 
 有序列表：数字+点+空格
 

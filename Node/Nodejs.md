@@ -2,26 +2,18 @@
 
 ## nvm
 
-```bash
-nvm install stable ## 安装最新稳定版 node
-nvm install <version> ## 安装指定版本
-
-nvm uninstall <version> ## 删除已安装的指定版本
-nvm use <version> ## 切换使用指定的版本node
-
-nvm ls ## 列出所有安装的版本
-nvm ls-remote ## 列出所有远程服务器的版本
-
-nvm current ## 显示当前的版本
-
-nvm alias <name> <version> ## 给不同的版本号添加别名
-nvm unalias <name> ## 删除已定义的别名
-
-nvm reinstall-packages <version> ## 在当前版本node环境下，重新全局安装指定版本号的 npm 包
-nvm alias default [node版本号] ##设置默认版本
-```
-
-
+|                                     |                                                       |
+| ----------------------------------- | ----------------------------------------------------- |
+| `nvm install stable`                | 安装最新稳定版 node                                   |
+| `nvm install / uninstall <version>` | 安装 / 删除指定版本                                   |
+| `nvm use <version>`                 | 切换使用指定的版本node                                |
+| `nvm ls`                            | 列出所有安装的版本                                    |
+| `nvm ls-remote`                     | 列出所有远程服务器的版本                              |
+| `nvm current`                       | 显示当前的版本                                        |
+| `nvm alias <name> <version>`        | 给不同的版本号添加别名                                |
+| `nvm unalias <name>`                | 删除已定义的别名                                      |
+| `nvm reinstall-packages <version> ` | 在当前版本node环境下，重新全局安装指定版本号的 npm 包 |
+| `nvm alias default [node版本号]`    | 设置默认版本                                          |
 
 ## npm
 
@@ -47,6 +39,22 @@ rmdir /s/q node_modules
 npm cache clear --force / npm cache clear -f
 ```
 
+### 命令
+
+| npm 命令               | pnpm 等价命令           |
+| ---------------------- | ----------------------- |
+| `npm install`          | `pnpm install / pnpm i` |
+| `npm i <pkg>`          | `pnpm add `             |
+| `npm run <cmd>`        | `pnpm `                 |
+| `dependencies`         | `pnpm add <pkg>`        |
+| `devDependencies`      | `pnpm add -D <pkg>`     |
+| `optionalDependencies` | `pnpm add -O <pkg>`     |
+| `path`                 | `pnpm add -g <pkg>`     |
+| 标记为 `next` 的版本   | `pnpm add <pkg>@next`   |
+| 指定版本               | `pnpm add <pkg>@3.0.0`  |
+
+
+
 ## pnpm
 
 * #### 使用 npm 安装
@@ -70,22 +78,6 @@ npm cache clear --force / npm cache clear -f
   | Node.js 14 | ✔️      | ✔️      | ✔️      | ✔️      |
   | Node.js 16 | ?️      | ?️      | ✔️      | ✔️      |
   | Node.js 18 | ?️      | ?️      | ✔️      | ✔️      |
-
-* #### 命令
-
-  | npm 命令               | pnpm 等价命令           |
-  | ---------------------- | ----------------------- |
-  | `npm install`          | `pnpm install / pnpm i` |
-  | `npm i <pkg>`          | `pnpm add `             |
-  | `npm run <cmd>`        | `pnpm `                 |
-  | `dependencies`         | `pnpm add <pkg>`        |
-  | `devDependencies`      | `pnpm add -D <pkg>`     |
-  | `optionalDependencies` | `pnpm add -O <pkg>`     |
-  | `path`                 | `pnpm add -g <pkg>`     |
-  | 标记为 `next` 的版本   | `pnpm add <pkg>@next`   |
-  | 指定版本               | `pnpm add <pkg>@3.0.0`  |
-
-
 
 ## npx
 
@@ -114,7 +106,7 @@ npx node-sass -v
 | Node 8           | 4.5.3+, <5.0   |             | 57          |
 | Node < 8         | < 5.0          |             | <57         |
 
-## 重装node-sass sass-loader
+#### 重装node-sass sass-loader
 
 ```bash
 npm uninstall node-sass sass-loader
@@ -146,4 +138,22 @@ npm ERR! ERESOLVE unable to resolve dependency tree
    npx -p npm@版本号 npm i --legacy-peer-deps
    ```
 
-   
+
+## express
+
+### 安装
+
+* 全局安装
+
+  ```shell
+  npm install express-generator -g
+  ```
+
+* 进入项目目录
+
+  ```shell
+  express --view=ejs server
+  ```
+
+  
+
