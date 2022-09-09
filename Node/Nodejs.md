@@ -15,47 +15,51 @@
 | `nvm reinstall-packages <version> ` | 在当前版本node环境下，重新全局安装指定版本号的 npm 包 |
 | `nvm alias default [node版本号]`    | 设置默认版本                                          |
 
-## npm
+## npm、yarn、pnpm
 
-### 初始化
+#### 初始化
 
 ```shell
 npm init 
 ```
 
-
-
-### 快速删除node_modules
+#### 快速删除node_modules
 
 ```shell
 rmdir /s/q node_modules 
 ```
 
-
-
-### 清除npm缓存
+#### 清除npm缓存
 
 ```shell
 npm cache clear --force / npm cache clear -f
 ```
 
-### 命令
+#### 命令
 
-| npm 命令               | pnpm 等价命令           |
-| ---------------------- | ----------------------- |
-| `npm install`          | `pnpm install / pnpm i` |
-| `npm i <pkg>`          | `pnpm add `             |
-| `npm run <cmd>`        | `pnpm `                 |
-| `dependencies`         | `pnpm add <pkg>`        |
-| `devDependencies`      | `pnpm add -D <pkg>`     |
-| `optionalDependencies` | `pnpm add -O <pkg>`     |
-| `path`                 | `pnpm add -g <pkg>`     |
-| 标记为 `next` 的版本   | `pnpm add <pkg>@next`   |
-| 指定版本               | `pnpm add <pkg>@3.0.0`  |
+| npm                                            | pnpm                   | yarn               |
+| ---------------------------------------------- | ---------------------- | ------------------ |
+| `npm install / i`                              | `pnpm install / i`     | `yarn`             |
+| `npm i <pkg>`                                  | `pnpm add `            | `yarn add`         |
+| `npm run <cmd>`                                | `pnpm `                | `yarn`             |
+| `dependencies`                                 | `pnpm add <pkg>`       |                    |
+| `devDependencies`                              | `pnpm add -D <pkg>`    |                    |
+| `optionalDependencies`                         | `pnpm add -O <pkg>`    |                    |
+| `path`                                         | `pnpm add -g <pkg>`    |                    |
+| 标记为 `next` 的版本                           | `pnpm add <pkg>@next`  |                    |
+| 指定版本                                       | `pnpm add <pkg>@3.0.0` |                    |
+| `npm cache clear --force / npm cache clear -f` |                        | `yarn cache clean` |
+|                                                |                        | `yarn list `       |
+| `npm info`                                     |                        | `yarn info`        |
+|                                                | `npm i -g pnpm@next-7` | `npm i -g yarn`    |
+| `npm init`                                     |                        | `yarn init`        |
+| `npm update`                                   |                        | `yarn upgrade`     |
+| `npm unistall`                                 |                        | `yarn remove`      |
+|                                                |                        |                    |
+|                                                |                        |                    |
+|                                                |                        |                    |
 
-
-
-## pnpm
+### pnpm
 
 * #### 使用 npm 安装
 
@@ -138,6 +142,20 @@ npm ERR! ERESOLVE unable to resolve dependency tree
    npx -p npm@版本号 npm i --legacy-peer-deps
    ```
 
+## EventLoop
+
+* nodejs将任务分成六类，分阶段调用，node会不停循环处理事件，这个过程称为事件循环
+  1. `timer `(setTimeout)
+  2. `I/O callbacks`
+  3. `idle、 preoare`
+  4. `poll`轮询，停留时间最，可随时离开
+     *  主要处理I/O事件，node不停询问系统有无文件数据，网络数据等
+     * 如果node发现timer事件快到了或者有`setImmediate`事件，就会主动离开此阶段
+  5. `check`，处理`setImmediate`事件
+  6. `close callback`
+* process.nextTick
+  * node11之前会在队尾执行
+  * node11之后在任务间隙插队执行
 
 ## express
 
@@ -155,5 +173,172 @@ npm ERR! ERESOLVE unable to resolve dependency tree
   express --view=ejs server
   ```
 
+
+## fs
+
+### 创建文件
+
+#### fs.writeFile()
+
+```js
+fs.writeFile('newfile.txt', 'content', (err) =>{ 
+  //有文件则覆盖掉内容，没有则创建文件再写入内容
+  if (err) throw err; 
+});
+```
+
+#### fs.appendFile()
+
+```js
+fs.appendFile('newfile_2.txt', 'content', (err) =>{ 
+  //不会覆盖掉原文件的内容
+  if (err) throw err; 
+});
+```
+
+#### fs.open()
+
+```js
+fs.open('newfile_3.txt', 'w', (err, file) =>{ 
+  if (err) throw err; 
+});
+```
+
+### 创建文件夹
+
+#### fs.mkdir()
+
+```js
+fs.mkdir('./test', (err) =>{
+ if(err) console.log(err)
+ console.log('创建成功')
+}) 
+```
+
+### 删除文件
+
+#### fs.unlink()
+
+```JavaScript
+fs.unlink('./tests.js', (err,data) =>{
+   if(err) console.log(err);
+   console.log('删除成功')
+})
+```
+
+###  删除文件夹
+
+#### fs.rmdir()
+
+```JavaScript
+fs.rmdir('module', (err,data) =>{
+  //删除文件夹，要删除的文件夹的必须是空的
+  if(err) console.log(err);
+  console.log(data)
+})
+```
+
+###
+
+### 判断文件夹或文件
+
+#### fs.stat()
+
+```js
+fs.stat('./module', (err,data) =>{
+   if(err) console.log(err)
+   if(data.isFile()){
+       console.log('./module是文件')
+   }else{
+       console.log('./module是文件夹')
+   }
+})
+```
+
+### 读取文件
+
+#### fs.readFile()
+
+```js
+fs.readFile('./tests.js', (err,data) =>{
+  if(err) console.log(err);
+  //因为读取出来的内容是十六进制的，所以我们需要使用toString方法转换为字符串
+  console.log(data.toString());
+})
+```
+
+### 读取文件夹
+
+#### fs.readdir()
+
+```JavaScript
+fs.readdir('./module', (err,data) =>{
+  if(err) console.log(err);
+  //data是一个数组包含了文件夹里的文件和文件夹
+  console.log(data)
+})
+```
+
+### 重命名文件
+
+#### fs.rename()
+
+```JavaScript
+ fs.rename('./tests.js', './module/inde.js', (err,data) =>{
+  //对文件重命名，并且移动文件
+  //第一个参数是要重命名的文件，第二个文件是要移动的路径和新的名称
+  if(err) console.log(err);
+  console.log(data)
+})
+```
+
+### 流读取
+
+#### fs.createReadSteam()
+
+```JavaScript
+const reader = fs.createReadStream('./tests.js');
+reader.on('data', data =>{
+   console.log(data. toString(), 'data')
+})
+reader.on('end', () =>{
   
+})
+```
+
+### 流写入
+
+#### fs.createWriteSteam()
+
+```JavaScript
+const stream = fs.createWriteStream('./tests.js');
+stream.write('var cod=3;'); //写入内容，会覆盖掉原文件的内容
+stream.end();
+stream.on('finish',()=>{
+   //监听写入完成
+   console.log('写入完成')
+})
+```
+
+### 管道流
+
+#### .pipe()
+
+```JavaScript
+const reader = fs.createReadStream('./tests.js');
+const stream = fs.createWriteStream('./aa.js');
+//读取一个文件的内容写入到另一个文件中
+reader.pipe(stream)
+```
+
+### 文件真实路径
+
+#### fs.realpath
+
+```js
+fs.realpath('./test.js', (err,data) =>{
+       if(err) console.log(err);
+       console.log(data);
+})
+```
 

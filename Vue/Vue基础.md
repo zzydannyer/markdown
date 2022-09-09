@@ -12,61 +12,45 @@
 
 ### 生命周期
 
-* 每个Vue实例在被创建时都有一个初始化的过程，例如需要数据监听、模板编译、实例挂载，这个过程中会运行一些==生命周期钩子==函数
+* 每个Vue组件实例在被创建时都有一个初始化的过程，例如需要数据监听、模板编译、实例挂载到dom，以及数据变化更新dom，这个过程中会运行一些==生命周期钩子==函数
+* ==vue2 Options API==
+  * 创建前后
+    * `beforeCreate`挂载元素$el和数据对象data都为undefined
+      1. 通常用与插件开发中执行一些初始化任务
+    * `created`渲染成 HTML 前调用，初始化属性值，再渲染成视图
+      1. 访问各种数据，获取接口数据
+  * 载入前后
+    * `beforeMounte`$el和data初始化完毕，挂载在虚拟dom节点，data.message未替换
+    * `mounted`渲染后调用，初始化页面后对 DOM 节点进行操作，data.message成功渲染
+      1. 可以访问dom元素，访问子组件
+  * 更新前后
+    *  `beforeUpdate`可获取组件更新前的状态
+    * `updated`所有状态已是最新
+  * 销毁前后
+    * `beforeDestroy`可用于解绑自定义事件，DOM事件、清除定时器或取消订阅
+    * `destroyed`不再触发周期函数，解除事件监听和DOM绑定，但DOM结构依然存在
+  * `keep-alive`
+    * `activated`缓存组件被激活
+    * `deactivated`缓存组件停用
+    * `errorCaptured`捕获来自子孙组件的错误
+  
+* ==vue3 Composition API==
 
-```js
-/* Options API */
+  * `setup`
+    1. 在beforeCreate前调用
+    2. 没有this
+    3. 无法使用data和methods
+    4. 只能同步不能异步
 
-export default{
-    beforeCreate(){},	//实例创建前，挂载元素$el和数据对象data都为undefined
-    created(){},		//实例创建前，渲染成 HTML 前调用，初始化属性值，再渲染成视图
-						//vue数据多项data有了，$el还没有
-    
-    beforeMounte(){},	//实例挂载前，$el和data初始化完毕，挂载在虚拟dom节点，data.message未替换
-    mounted(){},		//实例挂载前，渲染后调用，初始化页面后对 DOM 节点进行操作，data.message成功渲染
-    
-    beforeUpdate(){},	//实例更新前
-    updated(){},		//实例更新后
-    
-    Vue2:
-    beforeDestroy(){},	/* 实例销毁前
-    						1. 解绑自定义事件，DOM事件
-    						2. 清除定时器
-    					 */
-    destroyed(){},		//实例销毁后，不再触发周期函数，解除事件监听和DOM绑定，但DOM结构依然存在
-    
-    Vue3:
-    beforeUnmount(){},
-    unmounted(){},
-}
-
-```
-
-```js
-/* Composition API */
-
-import (
-    onBeforeMount,
-    onMounted,
-    
-    onBeforeUpdate,
-    onUpdated,
-    
-    onBeforeUnmount,
-    onUnmounted
-) from Vue
-
-export default{
-    setup(){
-        /* 
-         * setup在beforeCreate前调用
-         * 没有this
-         *
-         */
-        
-        onBeforeMount(()=>console.log('onBeforeMount'))
-}
-```
+  * `onBeforeMount`
+  * `onMounted`
+  * `onBeforeUpdate`
+  * `onUpdated`
+  * `onBeforeUnmount`
+  * `onUnmounted`
+  * `renderTracked`调试钩子，响应式依赖收集时调用
+  * `renderTriggered`调试钩子，响应式依赖触发时调用
+  * `serverPrefetch`ssr only，组件实例在服务器上被渲染前调用
 
 #### beforeDestroyed
 
@@ -183,6 +167,20 @@ export default {
 * 基本类型值要用`ref`来包装，引用数据类型需要用`reactive`来包装
 * 使用`proxy`代理对象，因为proxy只能接收对象作为参数，所以==基本类型值==被转化为了`{value：值}`
 * 对用reactive包装的引用类型数据进行解构赋值的时候，需要使用`torefs`。原理：`torefs`把数据包装成``{key:proxy(value:值)}``
+
+### diff算法
+
+#### react & vue的区别
+
+1. React是从左向右遍历对比，Vue是双端交叉对比。
+
+2. React 需要维护三个变量（有点扯), Vue则需要维护四个变量。
+
+3. Vue整体效率比React更高，举例说明:假设有N个子节点，我们只是把最后子节点移到第一个，那么
+
+  * React需要进行助Map进行key搜索找到匹配项，然后复用节点
+
+  * Vue会发现移动，直接复用节点
 
 ### 模板编译
 
@@ -329,7 +327,7 @@ export default {
    }
    ```
 
-
+#### 
 
 ### SPA和MPA
 
@@ -416,16 +414,15 @@ this.$refs.test.$el //获取组件渲染后的DOM
 
 ### keep-alive
 
-* 缓存页面，频繁切换时不需要重新渲染
+* 缓存页面，频繁切换时不需要重新渲染，`include`，`exclude`匹配组件`name`
 
-  ```html
-  <Tab />
-  <keep-alive>
-      <router-view><router-view />
-  </keep-alive >
+  ```vue
+  //也可以用正则表达式 /a|b/ 数组 ['a','b']
+  <keep-alive include="a,b"> 
+      <router-view />
+  </keep-alive > 
   ```
 
-  
 
 ### vue-loader
 
@@ -469,7 +466,35 @@ this.$refs.test.$el //获取组件渲染后的DOM
 
 * ==Vue2==v-for优先级更高，两个不能一起写，每次渲染都会先循环再进行条件判断
 
-* ==Vue3==相反
+  * 过滤列表项
+
+    ```vue
+    <div v-for="user in users" v-if="user.isActive"></div>
+    //优化为
+    <div v-for="user in users.filter(u => u.isActive)"></div>
+    ```
+
+  * 避免渲染本该被隐藏的项目
+
+    ```vue
+    <div v-for="user in users" v-if="shouldShowUsers"></div>
+    //优化为
+    <template v-if="shouldShowUsers">
+    	<div v-for="user in users"</div>
+    </template>
+    ```
+
+    
+
+* ==Vue3==相反，所以v-if，它调用的变量不存在，就会报异常
+
+### v-for渲染不及时
+
+* 更新值的下一句添加上
+
+  ```js
+  this.$forceUpdate()
+  ```
 
 ### v-show和v-if的异同
 
@@ -571,18 +596,27 @@ computed: {
 
 * 函数的形式组件每次会返回新的对象，不会公用一个对象
 
-## 组件传值
+## 组件通信
 
-* 通过`Vuex`传值
+![image-20220724022241773](Vue%E5%9F%BA%E7%A1%80.assets/image-20220724022241773.png)
 
-* 通过`eventBus`传值（发布订阅模式）
+* `props` /` $emit`
+
+* `$parents` 、`$attrs`
+
+* ~~`$on`~~、~~`$children`~~、~~`$listeners`~~(vue3废除)
+
+* `ref`
+
+* `$root`
+
+* `Vuex`、`pinia`
+
+* `eventBus`（发布订阅模式）
 
   1. 创建一个vue的实例，并且导出为bus。
-
   2. 在传值和接值的组件引入这个实例。  
-
   3. 传值使用` bus.$emit('标识'，data)`
-
   4. 接收值使用`bus.$on('标识'，data=>())`
 
 * EventBus - Vue2
@@ -590,7 +624,7 @@ computed: {
   ```js
   /* main.js */
   Vue.prototype.$EventBus = new vue()
-  或
+  //或
   const EventBus = new Vue();
   
   Object.defineProperties(Vue.prototype, {
@@ -615,7 +649,7 @@ computed: {
   this.$EventBus.$off()
   ```
 
-  ```js
+  ```vue
   /* A.vue */
   <button @click="sendMsg()" />
   
@@ -624,9 +658,7 @@ computed: {
         this.$EventBus.$emit("receiveMsg", '来自A的消息');
       }
     }
-  ```
-
-  ```js
+  
   /* B.vue */
   <p>{{msg}</p>
   
@@ -641,6 +673,7 @@ computed: {
       });
    }
   ```
+  
 
 
 * EventBus - Vue3
@@ -685,83 +718,29 @@ computed: {
       function changeMenu() {
         Bus.$emit("change-menu");
       }
-  
-      onBeforeUnmount(() => {
-        Bus.$off("change-menu");
-      });
-  
-      return { changeMenu };
-    },
-  });
-  ```
-
-  ```js
-  export default defineComponent({
-    setup() {
-      onMounted(() => {
+  	onMounted(() => {
         Bus.$on("change-menu", () => {
           isCollapse.value = !isCollapse.value;
         });
       });
-      return { };
-    }
+      onBeforeUnmount(() => {
+        Bus.$off("change-menu");
+      });
+        
+  	
+      return { changeMenu };
+    },
   });
   ```
+  
 
 
 * 父子组件传值：
-  * 父组件
-  
-   ```html
-   <component @add="addAge" :age="age" />
-   ```
-  
-  ```js
-  export default{
-      data(){
-          return{
-      		age:20  //必须定义为响应式数据
-  		}
-      },
-      methods:{
-          addAge(newAge){
-              this.age += newAge
-          }
-  	}
-  }
-  ```
-  
-  * 子组件
-  
-  ```html
-  <h1> {{age}} </h1>
-  <button @click="onClick"></button>
-  ```
-  
-  ```js
-  export default{
-      props:{
-          age:{
-              type:Number
-          }
-      },
-      methods:{
-      	onClick(){
-          	this.$emit('add',1)
-      	}
-      }
-      
-  }
-  ```
-  
+  * `props`/`$emit`/`$parent`/`ref`/`$attrs`
 * 兄弟组件传值
-
-  * 创建一个vue的实例，并且导出为bus。
-  * 在传值和接值的组件引入这个实例。  
-
-  * 传值使用 `bus.$emit('标识'，data)`
-
-  * 接收值使用`bus.$on('标识'，data=>())`
+* `$parent`/`$root`/`eventbus`/`vuex`
+* 跨层级关系
+  * `$attrs`/`$listeners`/`eventbus`/`vuex`/`provide`+`inject`
 
 ### v-model传值给子组件
 
@@ -769,21 +748,94 @@ computed: {
 * 子组件在`methods`里，通过`this.$emit(update:modelValue, newValue)`进行数据更新
 * 自定义名称`v-model:valueName`
 
-### **组件中的v-model**
+### 组件中的v-model
+
+* vue2
+
+  父组件：
+
+  ```vue
+  <ChildComponent v-model="title" /> 
+  ```
+
+  等同于
+
+  ```vue
+  <ChildComponent :value="title"  @input="title=$event" /> 
+  ```
+
+  子组件：
+
+  ```js
+  export default {
+    model: {
+      prop: 'title',   // v-model绑定的属性名称
+      event: 'change'  // v-model绑定的事件
+    },
+    props: {
+      value: String,   // value跟v-model无关
+      title: {         // title是跟v-model绑定的属性
+        type: String,
+        default: 'Default title'
+      }
+    }
+  }
+  ```
+
+* vue3
+
+  父组件：
+
+  ```vue
+  <ChildComponent v-model="title">
+  //或者
+  <ChildComponent v-model:title="title" />
+  ```
+
+  等同于
+
+  ```vue
+  <ChildComponent :modelValue="title" @update:modelValue="title=$event">
+  //或
+  <ChildComponent :title="title" @update:title="title=$event" />
+  ```
+
+  子组件：
+
+  ```js
+  export default defineComponent({
+      props:{
+          modelValue:String,   // v-model绑定的属性值
+          //或
+          title:String,   // 可以用其他属性名：title替代modelValue
+      },
+      setup(){
+          const updateValue = (e: KeyboardEvent) => {
+            context.emit("update:modelValue",targetValue);   // 传递的方法
+            //或
+            context.emit("update:title",targetValue); 
+          }
+      }
+  }
+  ```
+
+  
+
+#### v-model tab栏
 
 ```jsx
 /*APP.vue*/
 <template>
     <Tab-bar v-model="select" :data="data"></Tab-bar>
     等同于
-    <Tab-bar  :value="select" @input="select = $event"></Tab-bar>   Tab-bar组件
+    <Tab-bar  :value="select" @input="select=$event"></Tab-bar>   Tab-bar组件
 <template>
 
 export default{
     data(){
     	return{
             index:0 ,
-            data:[{label:'选项1'}...]
+            tabs:[{label:'选项1'}...]
         }
     },
 	computed:{
@@ -988,11 +1040,38 @@ export default {
 
 ### 异步组件
 
+* 在大型应用中，需要分割应用为更小的块，并在需要组件时加载它们
+* 不仅可以在路由切换时懒加载组件，还可以在页面组件中使用异步组件
+* 使用异步组件的方式`defineAsyncComponent`指定一个loader函数，结合import实现
+* 可以指定一个对象，里面包含`loadingComponent`和`errorComponent`选项增强加载反馈
+* vue3结合`Suspense`组件在加载过程中渲染一些后备的内容
+* 异步组件和路由懒加载容易混淆，异步组件不能被用于定义懒加载路由，处理它的是vue框架，而处理路由懒加载的是vue-router，但是可以在懒加载的路由组件中使用异步组件
+
+#### vue3
+
+```javascript
+import { defineAsyncComponent } from 'vue'
+
+const AsyncComp = defineAsyncComponent(() => {
+    return new Promise((resolve, reject) => {
+        //可从服务器加载组件
+        resolve(/* loaded component */)
+    })
+})
+
+//借助打包工具实现动态导入
+const AsyncComp = defineAsyncComponent(() => {
+    import('./components/MyComponents.vue')
+})
+```
+
+#### vue2
+
 * 不直接import
 
   ```js
   components{
-      compName: ()=>import('path')
+      compName: () => import('path')
   }
   ```
 
@@ -1064,19 +1143,85 @@ export default {
 ### ref 和 reactive
 
 * 两者均用于构造响应式数据
-
 * `ref`：封装`RefImpl`类，并设置`get value`/`set value`，拦截用户的访问
 
   * 处理单值、原始值的响应式，接收`inner value`，返回响应式`Ref`对象
 
   * 可以是数组、对象，内部依然是`reactive`实现响应式
   * 在`JS`中需要加上`.value`，在视图中不需要
-
 * `reactive`：使用`Proxy`代理对象并拦截操作
 
   * 处理对象类型的响应式，返回响应式代理对象
   * 接收`Ref`对象会自动脱`Ref`
   * 使用`...`会使其失去响应性，需使用`toRefs()`将其转化为`Ref`对象
+
+### watch 和 watchEffect
+
+* `watchEffect`立即运行一个函数，被动追踪其依赖，依赖改变重新执行函数
+
+  ```jsx
+  const count = ref(0)
+  watchEffect(()=> console.log(count.value) )
+  //logs 0
+  count.value++
+  //logs 1
+  ```
+
+* `watch`侦测一个或多个响应式数据，数据变化是调用回调函数
+
+  ```jsx
+  const state = reactive({ count:0 })
+  watch(
+      ()=> state.count,
+      (count, prevCount) => {}
+  )
+  ```
+
+* watch更底层，可以接收多种数据源，包括依赖收集的getter函数，因此它可以实现watchEffect的功能
+
+* watch依赖控制更精确，能获取数据变化后的值
+
+* watchEffect传入的函数既是依赖收集的数据源，也是回调函数
+
+* watchEffect传入的函数会立即执行一次，watch默认不会执行，除非设置`immediate`
+
+* `watchEffect(fn)`相当于`watch(fn, fn, {immediate: true})`
+
+### 自定义全局API
+
+* `axios.d.ts`
+
+  ```typescript
+  import { AxiosInstance } from 'axios'
+  
+  declare module "@vue/runtime-core"{
+      interface ComponentCustomProperties{
+          $axios: AxiosInstance
+      }
+  }
+  ```
+
+* `app.ts`
+
+  ```typescript
+  const app - createApp(App)
+  app.config.globalProperties.$axios = axios
+  app.mount('#app')
+  ```
+
+* `xxx.vue`
+
+  ```typescript
+  import { getCurrentInstance, ComponentInternalInstance } from 'vue'
+  
+  const { proxy } = getCurrentInstance() as ComponentInternalInstance
+  proxy!.$axios
+  	.get('h')
+  	.then((res) => res.data)
+  	.then((json) => console.log(json))
+  ```
+
+  
 
 ### 插件
 
@@ -1084,10 +1229,10 @@ export default {
 
   ```js
   const plugin ={
-  install(app,option){
-  //app 是vue的根实例，option是使用插件传入的参数
-      do someting
-  }
+      install(app,option){
+      //app 是vue的根实例，option是使用插件传入的参数
+          do someting
+      }
   }
   // 插件的使用方法
   createApp(App).use(plugin,option)
@@ -1664,6 +1809,95 @@ $ pnpm create vite <project-name> -- --template vue
   </template>
   ```
 
+### 错误处理
+
+#### 分析
+
+* 应用中错误类型分为`接口异常`和`代码逻辑异常`
+* `接口异常`请求后端接口中发生的异常，可能是请求失败，=u=也可能是请求获得了服务器响应，但返回的是错误状态
+  * 以axios为例，通过封装axios，在拦截器中统一处理整个应用中的错误请求
+* `代码逻辑异常`是编写的代码存在逻辑上的错误造成的，常见方式时使用全局错误处理函数`app.config.errorHandler`收集错误
+* 错误收集之后统一处理异常
+  * 请求错误需要上报接口信息，参数和状态码
+  * 代码逻辑异常，获取错误名称和详情，还可以收集应用名称、环境、版本、用户信息、所在页面，可以通过vuex存储的全局状态和路由信息获取
+
+#### 实践
+
+* axios拦截器捕获异常
+
+  ```js
+  instance.interceptors.reesponse.use(
+  	response => {
+          return response.data;
+      },
+      error => {
+      //存在response说明服务器有响应
+      	if (error.response){
+      		let response = error.response;
+      		if(response.status >= 400){
+                  handleError(response, 1)
+              }
+  		} else {
+              handleError(null, 1)
+          }
+  		return Promise.reject(error)
+  	}
+  )
+  ```
+
+* 处理接口请求错误
+
+  ```js
+  function handleError(error, type){
+      if (type == 1){
+         //接口错误，从config字段中获取请求信息
+          let { url, method, params, data } = error.config
+          let err_data = {
+              url, method,
+              params: { query: params, body: data },
+              error: error.data?.message || JSON.stringify(error.data)
+  		}
+      }
+  }
+  ```
+
+* vue全局捕获异常
+
+  ```js
+  import { createApp } from 'vue'
+  
+  const app = createApp(...)
+  
+  app.config.errorHandler = (err, instance, info) => {
+      ...
+  }
+  ```
+
+* 处理前端逻辑错误
+
+  ```js
+  function handleError(error, type){
+      if (type == 2){
+          let errData = null
+          //逻辑错误
+          if (error instanceof Error){
+              let { name, message } = error
+              errData = {
+                  type: name,
+                  error: message
+              }
+          } else {
+              errData = {
+                  type: 'other',
+                  error: JSON.stringify(error)
+              }
+          }
+      }
+  }
+  ```
+
+  
+
 # 性能优化
 
 ### 性能优化
@@ -1759,3 +1993,220 @@ $ pnpm create vite <project-name> -- --template vue
   2. data层级不要太深
   3. 使用vue-loader在开发环境做模板编译（预编译）
   5. 前端通用的性能优化，如图片懒加载使用
+
+# 插件
+
+### svg插件
+
+#### vite-plugin-svg-icons
+
+* 安装插件
+
+  ```shell
+  $ npm install vite-plugin-svg-icons -D
+  ```
+
+* 封装组件
+
+  ```vue
+  <template>
+      <svg aria-hidden="true" class="svg-icon" :width="props.size" :height="props.size">
+          <use :xlink:href="symbolId" :fill="props.color" />
+      </svg>
+  </template>
+  
+  <script lang="ts" setup>
+  import { computed } from "vue";
+  const props = defineProps({
+      prefix: {
+          type: String,
+          default: "svg",
+      },
+      name: {
+          type: String,
+          required: true,
+      },
+      color: {
+          type: String,
+          default: "#333",
+      },
+      size: {
+          type: String,
+          default: "1em",
+      },
+  });
+  
+  const symbolId = computed(() => `#${props.prefix}-${props.name}`);
+  </script>
+  ```
+
+* 配置vite.config.js / ts
+
+  ```typescript
+  import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+  
+  export default defineConfig({
+   plugins: [
+    createSvgIconsPlugin({
+     // 指定需要缓存的图标文件夹
+     iconDirs: [resolve(process.cwd(), 'src/assets/svg')],
+     // 指定symbolId格式
+     symbolId: '[name]'
+    })
+  ]})
+  ```
+
+* main.js / ts中引入，全局注册
+
+  ```js
+  import 'virtual:svg-icons-register'
+  import svgComp from '@/components/svgComp.vue'
+  
+  app.component('svg-tag', svgComp)
+  ```
+
+* 使用
+
+  ```html
+  <svg-tag name="login"/>
+  ```
+
+  
+
+### Element-Plus
+
+#### 按需导入icon
+
+* vite.config.js / ts
+
+  ```js
+  import vue from '@vitejs/plugin-vue'
+  //按需自动导入icon
+  import Icons from 'unplugin-icons/vite'
+  import IconsResolver from 'unplugin-icons/resolver'
+  //按需自动导入element组件
+  import AutoImport from 'unplugin-auto-import/vite'
+  import Components from 'unplugin-vue-components/vite'
+  import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+  
+  export default defineConfig({
+    plugins: [
+      vue(),
+      AutoImport({
+        imports: ['vue'],
+        // 自动导入 Element Plus 相关函数，如：ElMessage, ElMessageBox... (带样式)
+        resolvers: [
+          ElementPlusResolver(),
+          IconsResolver({
+            prefix: 'Icon',
+          }),
+        ],
+      }),
+      Components({
+        resolvers: [
+          // 自动导入 Element Plus 组件
+          ElementPlusResolver(),
+          // 自动注册图标组件
+          IconsResolver(
+            {
+              enabledCollections: ['ep']
+            }
+          ),
+        ],
+      }),
+      //自动导入element图标
+      Icons({
+        autoInstall: true
+      }),
+    ],
+  })
+  
+  ```
+
+
+# 实战
+
+### 一、项目搭建
+
+#### 初始化
+
+* 初始化项目
+
+  ```shell
+  $ npm init -y
+  ```
+
+* 局部安装vue-cli
+
+  ```shell
+  $ npm install @vue/cli -D
+  ```
+
+* 查看版本
+
+  ```shell
+  $ npx vue -V
+  ```
+
+* 创建项目（`-m npm` 使用`npm`创建）
+
+  ```shell
+  $ npx vue create <project-name> 
+  ```
+
+* 安装依赖
+
+  ```shell
+  $ npm install element-plus -S
+  $ npm install sass -S
+  $ npm install axios -S
+  $ npm install vue-router -S
+  $ npm install vite-plugin-svg-icons -D
+  ```
+
+  
+
+### 二、项目配置
+
+#### vue.config.js
+
+* 添加配置[配置参考 | Vue CLI (vuejs.org)](https://cli.vuejs.org/zh/config/#devserver)
+
+  ```js
+   devServer: {
+      open: true,
+      host: 'localhost'
+   }
+  ```
+
+# 踩坑
+
+## vue2
+
+## vue3
+
+### element-plus
+
+#### table数据更新而视图不跟新
+
+* 数据直接赋值失去响应性
+
+  ```js
+  //方案1
+  const data = reactive({
+      arr: []
+  })
+  data.arr = newData
+  
+  //方案2
+  const data = ref([])
+  data.value = newData
+  
+  //方案3
+  const arr = reactive([])
+  arr.push(...newData)
+  
+  ```
+
+  
+

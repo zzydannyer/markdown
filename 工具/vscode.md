@@ -1,14 +1,24 @@
-#### vscode扩展
+#### 快速去空行
+
+* 正则筛选`^\s*(?=\r?$)\n`
+
+#### 扩展
 
 * **快速console.log**
+  
+    - ==Turbo Console Log==
     
-    - ==javascript console utils==
-    选中变量`ctrl + shift + L`
+      * 选中变量`ctrl + shift + L`
+      * 注释所用`alt + shift + c`
+      * 取消注释`alt + shift + u`
+      * 删除所有`alt + shift + d`
+    
+      
     
 * **快速测试请求**
-    
+  
     - ==REST Client==
-        
+      
         ```js
         GET https://example.com/comments HTTP/1.1  
         

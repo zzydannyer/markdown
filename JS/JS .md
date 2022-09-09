@@ -199,6 +199,30 @@ let n = this.n || n
 * 将变量始终存在内存中，可以封装私有属性和方法
 * 耗费内存、会造成内存溢出
 
+### 构造函数
+
+#### new做了什么
+
+1. 创建临时对象 / 新对象
+2. 绑定原型
+3. 指定this指向新对象
+4. 执行构造函数
+5. 返回临时对象
+
+### 立即执行函数
+
+* 适用于代码只执行一次的场景，使局部变量不影响全局变量
+
+  ```js
+  (function(){})()
+  ```
+
+  
+
+  
+
+
+
 ### 本地存储
 
 #### cookie
@@ -416,6 +440,73 @@ webworker：多线程，但不能访问DOM
 
 * 易维护、易扩展，提高复用和继承性，提高开发效率
 
+### 类数组
+
+* 定义：如果一个对象有`length`属性，它就是类数组
+
+* 常见类数组：
+
+  1. DOM中检索API的返回值
+     * `document.getElementsByTagName`
+     * `document.querySelectorAll`
+  2. function中的`arguments`
+
+* 类数组转化为数组
+
+  1. ES6+
+
+     * `Array.from`
+
+       ```js
+       Array.from({ length: 3 })
+       ```
+
+     * 扩展运算符
+
+       只能作用于`iterable`对象，即拥有``Symbol(Symbol.iterator)``属性
+
+       ```js
+       [...document.querySelectorAll("div")]
+       ```
+
+  2. ES5
+
+     ```js
+     const arrayLike = { 0: 3, 1: 4, 2: 5, length: 3 };
+     ```
+
+     * `Array.prototype.slice`
+
+       ```js
+       Array.prototype.slice.call(arrayLike);
+       ```
+
+     * `arguments`
+
+       ```js
+       Array.apply(null, arrayLike);
+       ```
+
+     - `Array.prototype.concat` 
+
+       ```js
+       Array.prototype.concat.apply([], arrayLike);
+       ```
+
+     - `Array.prototype.map` 
+
+       ```js
+       Array.prototype.map.call(arrayLike, (x) => x);
+       ```
+
+     - `Array.prototype.filter`
+
+       ```js
+       Array.prototype.filter.call(arrayLike, (x) => 1);
+       ```
+
+       
+
 ### 严格模式
 
 作用于当前作用域及其子作用域
@@ -452,9 +543,9 @@ webworker：多线程，但不能访问DOM
 * 提供原生的`Promise`对象
 * 引入`module`模块
 
-### let、const
+### let & const
 
-都不存在变量提升
+* 都不存在变量提升
 
 * 会形成封闭作用域，`const`定义常量，但可以修改定义的对象内部的值
 
@@ -471,10 +562,93 @@ webworker：多线程，但不能访问DOM
   run();
   ```
 
+### 字面量增强
+
+* Enhanced object literals
+
+#### 属性简写
+
+* Property Shorthand
+
+  ```js
+  const name = 'name'
+  const age = 18
+  const person = {
+  	name,
+      age
+  }
+  ```
+
+#### 函数简写
+
+* Method Shorthand
+
+  ```js
+  const obj = {
+  	foo: function (){
+          ...
+      },
+      bar(){
+          ...
+      }
+  }
+  ```
+
+#### 计算属性名
+
+* Computed Property Names
+
+  ```js
+  //obj[name + 123] = 'hahaha'
+  const obj = {
+      [name + 123]： ‘hehehe
+  }
+  ```
+
+### 解构
+
+* Destructuring
+
+* 对象的解构
+
+  ```js
+  const obj = {
+      a:'a',
+      b:'b',
+      c:'c',
+      name:'name'
+  }
+  
+  let { a, b, c } = obj
+  let { name: newName } = obj
+  let { address: newAddress = '上海市' } = obj
+  
+  const newObj = { ...obj }
+  ```
+
+* 数组的解构
+
+  ```js
+  const names = ['a', 'b', 'c']
+  
+  let [a, b, c] = names
+  //解构的默认值
+  let [a, b, c, d = 'd'] = names
+  let [, , c] = names
+  let [a, ...rest] = names
+  
+  function (...args){
+      ...
+  }
+  
+  ```
+
 ### ``??``代替 `||`
 
 * `??`用于判断左侧为`null`或`undefined`时，返回右边的值
 * `||`判断左边为空字符串或`0`等`false`值时才返回右边的值
+
+
 
 ### findindex、splice、unshift、pop
 
@@ -538,6 +712,31 @@ Array.prototype.push.apply(arr1, arr2)
 /* arr1 = [ 1, 2, 3, 4, 5, 6  ] */
 ```
 
+### 数组去重
+
+1. 使用Set
+
+   ```js
+   const newArr = Array.from（new Set([...arr])）
+   ```
+
+2. 使用Map
+
+   ```js
+   const uniq = a => {
+       const map = new Map()
+       for(let i=0; i<a.length; i++){
+           let number = a[i];
+           if(number === undefined){continue}
+           if(map.has(number)){continue}
+           map.set(number, true)
+       }
+       return [...map.keys()]
+   }
+   ```
+
+3. 使用Object，缺点：只支持字符串，因Object的key只有string和symbol
+
 ### 数组API
 
 #### `Array.of(..args)`
@@ -557,7 +756,12 @@ Array.prototype.push.apply(arr1, arr2)
   const arr = Array.from(div) //Array.prototype.slice.call(div)
   ```
 
-  
+* 第二个参数可以是函数
+
+  ```js
+  Array.from({length: 100}).map(()=>0)
+  Array.from({length: 100}, ()=>0)
+  ```
 
 ### Filter
 
@@ -796,19 +1000,6 @@ Sub.prototype = Object.create(super.prototype)
 VueComponent.prototype.__proto__=== Vue.prototype
 ```
 
-### **解构赋值**
-
-```js
-/* 对象的解构赋值 */
-
-const obj = {
-    aa:'aa',
-    bb:'bb'
-}
-
-const newObj = { ...obj }
-```
-
 ### 表单去空白
 
 ```js
@@ -843,7 +1034,61 @@ prototype有两个属性：
 
 ### 宏任务&微任务
 
+* 浏览器中只有任务Task和微任务Microtask。
+  1. 使用`script`标签、`setTimeout`可以创建任务。
+  2. 使用`Promise.then`、`window.queueMicrotask`、`MutationObserver`|`Proxy` 可以创建微任务。
+
 ![宏任务微任务](C:\Users\14046\Desktop\DOC\images\宏任务微任务.png)
+
+## 设计模式
+
+### 发布订阅
+
+#### eventhub
+
+* on
+
+* off
+
+* emit
+
+* once
+
+  ```typescript
+  class EventHub {
+    private cache: {[key:string]:Array<(...data) => void>} = {};
+    on(eventName: string, fn: (data: unknown)=>void) {
+      this.cache[eventName] = this.cache[eventName] || [];
+      this.cache[eventName].push(fn);
+    }
+    emit(eventName: string, ...data) {
+      (this.cache[eventName] || []).forEach(fn => {
+        fn(...data);
+      });
+    }
+    off(eventName: string, fn) {
+      this.cache[eventName] = this.cache[eventName] || [];
+      let index = undefined;
+      for (let i = 0; i < this.cache[eventName].length; i++) {
+        if (this.cache[eventName][i] === fn) {
+          index = i;
+          break;
+        }
+      }
+      if (index === undefined) {
+        return;
+      } else {
+        this.cache[eventName].splice(index, 1);
+      }
+    }
+  }
+  
+  export default EventHub;
+  ```
+
+  
+
+
 
 # 实用方法
 
@@ -1106,33 +1351,87 @@ Object.defineProperty(vue.prtotype, '$route', {
 | `document.body.scrollLeft`   | 文档被滚动右去的时候（即滚动条往右滚动的距离）               |
 | `document.body.scrollTop`    | 文档被滚动上去的时候（即滚动条往上滚动的距离）               |
 
-### 防抖
+### 防抖(debounce)
 
-```js
-function debounce(fn, wait){
-    let timer = null
-    return () => {
-         //每次触发，都把前面的定时器关闭，尽管第一次定时器并不存在
-        if(timer) clearTimeout(timer);
-        timer = setTimeout(（） => {fn()}, wait)
-	}
-}
-```
+* 定义：防止抖动，单位时间内事件触发会被重置，避免事件被误伤触发多次。**代码实现重在清零**
 
-### 节流
+* 使用场景：
 
-```js
-function throttle(fn, wait) {
+  1. 登录、发送短信等避免你用户点击太快，发送多次请求
+  2. 调整窗口大小，resize次数过于频繁造成计算过多
+  3. 文本编辑器实时保存，党务任何更改操作后延时保存
+  4. `input`搜索时发送请求展示数据，输入停止后延时发送请求
+
+  ```js
+  function debounce(fn, wait){
+      let timer;
+      return (...args) => {
+           //每次触发，都把前面的定时器关闭，尽管第一次定时器并不存在
+          if(timer) clearTimeout(timer);
+          timer = setTimeout(（） => {
+              fn(...args)
+          }, wait)
+  	}
+  }
+  ```
+
+* 使用
+
+  ```js
+  window.onresize = debounce(function () {
+    console.log("resize");
+  }, 500);
+  ```
+
+  
+
+### 节流(throttle)
+
+* 定义：控制流量，单位时间内事件只能触发一次，与服务器端的限流 (Rate Limit) 类似。**代码实现重在开锁关锁**
+
+* 使用场景：
+
+  1. `scroll` 事件，每隔一秒计算一次位置信息
+  2. 浏览器播放事件，每隔一秒计算进度信息
+  3. `input`搜索时发送请求展示数据，每隔一秒发送一次请求(也可用防抖)
+
+  ```js
+  //使用时间错
+  function throttle(fn, wait) {
       let start = 0
       return () => {
-        const end = new Date().getTime()
-        if (end - start > wait) {
-          fn()
-          start = end
-        }
+          const end = new Date().getTime()
+          if (end - start > wait) {
+              fn()
+              start = end
+          }
       }
-    }
-```
+  }
+  
+  //使用定时器
+  function throttle(fn, wait){
+      let timer
+      return (...args) => {
+          if(!timer){
+              timer = setTimeout(() => {
+                  timer = null
+                  fn(...args)
+  			}, wait)
+          }
+  	}
+  }
+  //或者
+  function throttle(fn, wait){
+      let timer;
+      return (...args) => {
+          if(timer) return;
+          timer = setTimeout(() => {
+              fn(..args);
+              timer = null;
+          }, wait)
+      }
+  }
+  ```
 
 #### 应用场景
 

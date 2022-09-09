@@ -1,6 +1,6 @@
 # CSS
 
-#### css3特性
+### css3特性
 
 * `flex`、`animation`、`transform`、`border-radius`、`box-shadow`、`opacity`
 
@@ -40,14 +40,16 @@
 
 ### 伪元素
 
-* `::after`，`::before`表示在标签的原有元素之前或者之后添加元素。
+* ### `::after`，`::before`表示在标签的原有元素之前或者之后添加元素。
 * `::selection `  表示被鼠标选中部分的样式
 * `::first-letter ` 表示第一个文字
 * `::first-line ` 表示第一行文字
 
+### 盒模型
 
+`content-box`和`borderbox`
 
-#### 背景毛玻璃的效果
+### 背景毛玻璃的效果
 
 * `filter：blur()`
 
@@ -96,9 +98,13 @@
 
 使用`getBoundingClientRect`或者`IntersectionObserver`计算指定元素位置，到达一定距离更改指定元素定位为fixed，从而实现sticky的效果
 
-### 快速居中对齐
+### pointer-events
 
-* flex
+* 设置`none`时事件无效
+
+### 垂直居中
+
+#### flex
 
 ```css
 .parent{
@@ -106,11 +112,23 @@
 }
 .child{
     justify-content: center;
-    align-item: center;
+    align-items: center;
 }
 ```
 
-* table-cell 多行文字垂直居中
+#### grid
+
+#### transform
+
+```css
+.item{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+```
+
+#### table-cell
 
 ```html
 <li class="item">
@@ -126,6 +144,15 @@
 .text{
     display:table-cell;
     vertical-align:middle;
+}
+```
+
+#### absolute margin auto
+
+```css
+.item{
+	position: absolute;
+	margin: auto;
 }
 ```
 
@@ -160,11 +187,22 @@
 }
 ```
 
-### link和@import
+### link 和 @import
 
 + `link`在加载页面时同时加载，`@import`在页面加载完毕后加载
 + `link`是HTML提供的标签，`@import`是css的语法规则，只能加载在==style标签内==和==css文件中==
 + `link`支持js控制DOM改变样式，而`@import`不支持
+
+### @font-face
+
+```css
+@font-face {
+   font-family: 'digifacewide';
+   src: url('./font/digifacewide.ttf');
+}
+```
+
+
 
 ## overflow
 
@@ -187,7 +225,24 @@
 white-space: nowrap;
 ```
 
+### white-space
 
+| 属性值   | 作用                 |
+| -------- | -------------------- |
+| normal   | 默认值，忽略空白     |
+| pre      | 保留空白             |
+| nowrap   | 不换行               |
+| pre-wrap | 保留空白并换行       |
+| pre-line | 合并空白，保留换行符 |
+| inhert   | 继承父级属性         |
+
+### text-overflow
+
+| 属性值   | 作用                     |
+| -------- | ------------------------ |
+| clip     | 多出文字裁剪             |
+| ellipsis | 多出文字省略             |
+| string   | 以指定字符串代替多出文字 |
 
 ## Flex
 
@@ -484,3 +539,201 @@ html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
 4. **其他解决方法**
 
    所有元素通过对父元素设置 text-align：center；的方式来实现居中
+
+## SASS & LESS
+
+### 基本使用
+
+#### 定义变量
+
+* scss
+
+  ```scss
+  $color:#00c;
+  .scss{
+     border:1px solid $color;
+  }
+  ```
+
+* less
+
+  ```less
+  @color:#00c;
+  .less{
+     border:1px solid @color;
+  }
+  ```
+
+#### 变量作用域
+
+* scss 只有全局变量，但可以通过`!default`处理
+
+  ```scss
+  $color:red !default;
+  .border{
+    border:1px solid $color;
+  }
+  ```
+
+* less 分全局和局部变量
+
+  ```less
+  @width:100px; //全局
+  h1{
+    @width:200px; //局部
+    width:@width;
+  }
+  ```
+
+#### 变量插值
+
+* scss
+
+  ```scss
+  $scss : search;
+  .@{ scss } {
+  	font-size ： 24px；
+  	color : #fff;
+  }
+  ```
+
+* less
+
+  ```less
+  @less : search;
+   .@{ less } {
+       font-size ： 24px；
+       color : #fff;
+   }
+  ```
+
+#### 条件语句、循环、函数
+
+* scss
+
+  ```scss
+  //if
+  p {
+     @if 1 + 1 == 2 { border: 1px solid; }
+     @if 5 < 3 { border: 2px dotted; }
+  }
+  //if else
+  @if lightness($color) > 30% {
+      　background-color: #000;
+  } @else {
+      　background-color: #fff;
+  }
+  //for
+  @for $i from 1 to 10 {
+     .border-#{$i} {
+       border: #{$i}px solid blue;
+  }
+  //while
+  $i: 6;
+    @while $i > 0 {
+      　.item-#{$i} { width: 2em * $i; }
+      　$i: $i - 2;
+  }
+  //each
+  @each $member in a, b, c, d {
+      　.#{$member} {
+      　background-image: url("/image/#{$member}.jpg");
+      }
+  }
+      
+  //function
+  @function double($n) {
+     @return $n * 2;
+  }
+  
+  #sidebar {
+     width: double(5px);
+  }
+  ```
+
+* less不支持
+
+#### 颜色函数
+
+* scss
+
+  ```scss
+  $border: darken(adjust_hue($bg, -10), 5%);
+  ```
+
+* less
+
+  ```less
+  @border: darken(spin(@bg, -10), 5%);
+  ```
+
+#### 引用父级选择器
+
+* scss
+
+  ```scss
+  a {
+     font-weight: bold;
+     text-decoration: none;
+     &:hover { text-decoration: underline; }
+     body.firefox & { font-weight: normal; }
+   }
+  
+  ```
+
+* less
+
+  ```less
+  .bg-variant(@color) {
+     background-color: @color;
+     a&:hover,
+     a&:focus {
+       background-color: darken(@color, 10%);
+     }
+   }
+  ```
+
+
+
+#### 混合
+
+* scss
+
+  ```scss
+  @mixin button-base {
+      display: inline-block;
+      background: transparent;
+  }
+  .s-btn {
+      @include button-base;
+  }
+  
+  @mixin left($value: 10px) {
+     margin-right: $value;
+  }
+   
+  div {
+      @include left(20px);
+  }
+  
+  ```
+
+* less
+
+  ```less
+  .rounded-corners (@radius: 5px) {
+      -webkit-border-radius: @radius;
+      -moz-border-radius: @radius;
+      -ms-border-radius: @radius;
+      -o-border-radius: @radius;
+      border-radius: @radius;
+  }
+   
+  #header {
+      .rounded-corners;
+  }
+  #footer {
+      .rounded-corners(10px);
+  }
+  ```
+

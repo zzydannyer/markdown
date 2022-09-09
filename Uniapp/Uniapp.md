@@ -1,4 +1,4 @@
-Uniapp
+# Uniapp
 
 ### 注意事项
 
@@ -60,4 +60,27 @@ Uniapp
   uni.upx2px(80)
   ```
 
+#### 底部横条遮挡
+
+* ```scss
+  padding-bottom: env(safe-area-inset-bottom);
+  ```
+
   
+
+
+#### 真机环境
+
+* `//`不能省略
+
+  ```js
+  // #ifdef MP 小程序
+  // #endif
+  // #ifdef H5 H5
+  // #endif
+  // #ifdef APP-PLUS APP
+  // #endif
+  ```
+
+  
+

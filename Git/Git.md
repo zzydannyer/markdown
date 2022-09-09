@@ -9,6 +9,12 @@
 
 执行`git pull --rebase origin master`命令README.md拉到本地
 
+### 提交流程 IDEA
+
+提交 - 提取 - 变基 - 推送
+
+* 变基修改冲突
+
 ### 初始配置
 
 右键`Git Bash Here`
@@ -112,6 +118,24 @@ git mv oldName newName
 | `git reset --soft 版本号`  | 不删除工作区代码，撤销commit，不撤销git add     |
 | `git reset --mixed 版本号` | 不删除工作区代码，撤销commit，==撤销git add==   |
 | `git reset --hard 版本号`  | ==删除工作区代码==，撤销commit，==撤销git add== |
+
+### 删除已提交文件
+
+* 删除文件
+
+  ```shell
+  git rm --cached [path]
+  ```
+
+  
+
+* 删除文件夹以及文件夹中的所有文件
+
+  ```bash
+  git rm -r --cached [path]
+  ```
+
+  
 
 ## 问题报错
 
