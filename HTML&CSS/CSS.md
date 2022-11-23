@@ -187,6 +187,17 @@
 }
 ```
 
+### 颜色
+
+#### rgb & rgba
+
+```css
+rgb(115 115 115 / 30%)
+rgba(115, 115, 115, .3)
+```
+
+
+
 ### link 和 @import
 
 + `link`在加载页面时同时加载，`@import`在页面加载完毕后加载
@@ -736,4 +747,96 @@ html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
       .rounded-corners(10px);
   }
   ```
+
+### 循环的使用
+
+#### 循环定义样式
+
+##### @for
+
+```scss
+//包含结束值
+@for $i from 1 through 150 {
+	.margin-left-#{$i}{
+		margin-left: (1px *$i);
+    }
+}
+
+//不包含结束值
+@for $i from 1 to 3{
+	.margin-left-#{2 * $i + 8}{
+		margin-left: 2 * $i + 8 + px;
+	}
+}
+```
+
+##### @each
+
+1. 遍历数组
+
+   ```scss
+    $arr: 5, 15;
+    $position: top, right, bottom, left;
+   
+    @each $item in $arr {
+      $index: index($arr, $item); /**可得到循环的索引*/
+      .margin-#{$item} {
+        margin: $item + px;
+        border-width: $index + px;
+      }
+      @each $p in $position{
+        .margin-#{$p}-#{$item}{
+          margin-#{$p}: $item + px;
+        }
+      }
+    }
+   ```
+
+2. 遍历对象
+
+   `@each in`
+
+   ```scss
+   $fonts:(
+   	'icon-0':'\e616',
+   	'icon-1':'\e611',
+   	'icon-3':'\e74c',
+   	'icon-2':'\e8e3',
+   );
+   @each $key,$val in $fonts{
+   	&.#{$key}{
+   		&::before{
+   			font-family: "iconfont";
+   			content: $val;
+   		}
+   	}
+   }
+   ```
+
+   `map-get()`：用来获取对象值，分别传入对象变量和想获取属性的字段
+
+   ```scss
+   $widthArr: (
+         ("minWidth":576px, "label":'ipad'),
+         ("minWidth":769px, "label":'narrow-pc'),
+   );
+   $prefixArr: (
+         ('label':'col', 'style':width),
+         ('label':'offset-', 'style':margin-left),
+   );
+   @each $item in $widthArr {
+   	@media (min-width: #{map-get($item,'minWidth')}) {
+   		@each $prefix in $prefixArr {
+   			$class-prefix: #{map-get($prefix,'label')}-#{map-get($item,'label')}-;
+   			@for $n from 1 through 24 {
+   				&.#{$class-prefix}#{$n} {
+   					#{map-get($prefix,'style')}: ($n/24)*100%;
+   				}
+   			}
+   		}
+   	}
+   }
+   ```
+
+   
 

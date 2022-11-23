@@ -174,23 +174,73 @@ let n = this.n || n
 
 ### 冒泡 和 捕获
 
-* 捕获 `window -> 目标元素`
-* 冒泡 `目标元素 -> window`
+#### 捕获
+
+`window -> 目标元素`
+
+#### 冒泡 
+
+`目标元素 -> window`
 
 ### 事件
 
-|                           |                              |
-| ------------------------- | ---------------------------- |
-| `event.preventDefault()`  | 阻止事件默认行为             |
-| `event.stopPropagation()` | 阻止事件捕获 / 冒泡          |
-| `event.target`            | 触发事件的元素（事件发出者） |
-| `event.currentTarget`     | 事件绑定的元素（事件监听者） |
+#### event.preventDefault
 
+* 阻止事件默认行为
 
+#### event.stopPropagation
+
+* 阻止事件捕获 / 冒泡
+
+|                       |                              |
+| --------------------- | ---------------------------- |
+| `event.target`        | 触发事件的元素（事件发出者） |
+| `event.currentTarget` | 事件绑定的元素（事件监听者） |
+|                       |                              |
+|                       |                              |
 
 ### window.length
 
 * `iframe`的个数
+
+## 函数
+
+### 函数的副作用
+
+* 副作用*是在计算结果的过程中，系统状态的一种变化，或者与外部世界进行的*可观察的交互
+
+* 副作用包含，但不限于：
+
+  1. 修改了外部变量
+
+     ```js
+     let rate = 1;
+     function sum(sum1, sum2){
+         rate = 2;
+         return sum1 + sum2
+     }
+     ```
+
+  2. 修改了入参
+
+     ```js
+     function sum(sum1, sum2){
+         sum1 = 10;
+         return sum1 + sum2
+     }
+     ```
+
+  3. 输出了日志`console.log`
+
+  4. 操作了DOM
+
+  5. 发送了http请求
+
+  6. 操作了客户端存储
+
+     * 如cookie, storage, indexedDB等等
+
+  7. 与service worker, iframe通讯等等
 
 ### 闭包
 
@@ -217,11 +267,8 @@ let n = this.n || n
   (function(){})()
   ```
 
-  
 
-  
-
-
+## 函数式编程
 
 ### 本地存储
 
@@ -609,7 +656,8 @@ webworker：多线程，但不能访问DOM
 
 * Destructuring
 
-* 对象的解构
+
+#### 对象的解构
 
   ```js
   const obj = {
@@ -626,22 +674,30 @@ webworker：多线程，但不能访问DOM
   const newObj = { ...obj }
   ```
 
-* 数组的解构
+#### 数组的解构
 
-  ```js
-  const names = ['a', 'b', 'c']
-  
-  let [a, b, c] = names
-  //解构的默认值
-  let [a, b, c, d = 'd'] = names
-  let [, , c] = names
-  let [a, ...rest] = names
-  
-  function (...args){
-      ...
-  }
-  
-  ```
+```js
+const names = ['a', 'b', 'c']
+
+let [a, b, c] = names
+//解构的默认值
+let [a, b, c, d = 'd'] = names
+let [, , c] = names
+let [a, ...rest] = names
+
+function (...args){
+    ...
+}
+```
+
+#### Set的解构
+
+```js
+let arr = new Set([1,2,3,4,5])
+let res = [...arr][arr.size-1]
+```
+
+
 
 ### ``??``代替 `||`
 
@@ -674,72 +730,35 @@ addToArr(arr,item,Fn,maxLength){
 }
 ```
 
-### 数组Array方法
+### 数组方法
 
-| 方法                                           | 用处                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------ |
-| forEach                                        | 封装内部循环的高级函数，无法break，可以用try、catch中throw new Error来停止 |
-| map                                            | 更多用于数组重构，回调返回值返回新数组                       |
-| filter                                         | 用于数组按条件过滤，返回过滤后的新数组                       |
-| some                                           | 有一个符合条件就返回true                                     |
-| every                                          | 所有都符合返回true                                           |
-| find                                           | 查找第一个符合条件的数组元素并返回该元素，没有则返回undefined |
-| join                                           | 指定连接符生成字符串                                         |
-| push / pop                                     | 末尾推入和弹出，改变原数组，返回操作项                       |
-| unshift / shift                                | 头部推入和弹出，改变原数组，返回操作项                       |
-| sort(fn) / reverse                             | 排序和反转，改变原数组                                       |
-| concat                                         | 连接数组，不影响原数组，浅拷贝                               |
-| slice(start, end)                              | 不改变原数组，返回截断后的新数组                             |
-| splice(start,number,value)                     | 返回删除的元素组成的数组，value为添加的元素，改变原数组      |
-| indexOf / lastIndexOf(value,fromIndex)         | 查找数组项，返回对应下标                                     |
-| reduce / reduceRight(fn(prev,cur),defaultPrev) | 两两执行，prev为上一次执行return的值，cur为当前值            |
+| 方法                                            | 用处                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| forEach                                         | 封装内部循环的高级函数，无法break，可以用try、catch中throw new Error来停止 |
+| map                                             | 更多用于数组重构，回调返回值返回新数组                       |
+| filter                                          | 用于数组按条件过滤，返回过滤后的新数组                       |
+| some                                            | 有一个符合条件就返回true                                     |
+| every                                           | 所有都符合返回true                                           |
+| find                                            | 查找第一个符合条件的数组元素并返回该元素，没有则返回undefined |
+| join                                            | 指定连接符生成字符串                                         |
+| push / pop                                      | 末尾推入和弹出，改变原数组，返回操作项                       |
+| unshift / shift                                 | 头部推入和弹出，改变原数组，返回操作项                       |
+| sort(fn) / reverse                              | 排序和反转，改变原数组                                       |
+| concat                                          | 连接数组，不影响原数组，浅拷贝                               |
+| slice(start, end)                               | 不改变原数组，返回截断后的新数组                             |
+| splice(start,number, value)                     | 返回删除的元素组成的数组，value为添加的元素，改变原数组      |
+| indexOf / lastIndexOf(value, fromIndex)         | 查找数组项，返回对应下标                                     |
+| reduce / reduceRight(fn(prev,cur), defaultPrev) | 两两执行，prev为上一次执行return的值，cur为当前值            |
 
-### 数组合并
+#### map和forEach的区别
 
-* concat
+* forEach遍历循环原数组`forEach((item, index, Array)=>{})`
 
-```javascript
-const  arr1 = [ 1, 2, 3 ]
-const  arr2 = [ 4, 5, 6 ]
-const  result = arr1.concat(arr2)
-/* result = [ 1, 2, 3, 4, 5, 6  ] */
-```
-
-* apply
-
-```js
-Array.prototype.push.apply(arr1, arr2)
-/* arr1 = [ 1, 2, 3, 4, 5, 6  ] */
-```
-
-### 数组去重
-
-1. 使用Set
-
-   ```js
-   const newArr = Array.from（new Set([...arr])）
-   ```
-
-2. 使用Map
-
-   ```js
-   const uniq = a => {
-       const map = new Map()
-       for(let i=0; i<a.length; i++){
-           let number = a[i];
-           if(number === undefined){continue}
-           if(map.has(number)){continue}
-           map.set(number, true)
-       }
-       return [...map.keys()]
-   }
-   ```
-
-3. 使用Object，缺点：只支持字符串，因Object的key只有string和symbol
+* map返回新数组，callback里需要return值，否则返回undefined
 
 ### 数组API
 
-#### `Array.of(..args)`
+#### Array.of(..args)
 
 * 根据指定==数组项==创建数组
 
@@ -747,7 +766,7 @@ Array.prototype.push.apply(arr1, arr2)
   const arr = Array.of(1, 2, 3, 5, 7)
   ```
 
-#### `Array.from(arg)`
+#### Array.from(arg)
 
 * 根据给定的==类数组==或==可迭代的对象==创建数组
 
@@ -759,51 +778,18 @@ Array.prototype.push.apply(arr1, arr2)
 * 第二个参数可以是函数
 
   ```js
-  Array.from({length: 100}).map(()=>0)
-  Array.from({length: 100}, ()=>0)
+  Array.from({length: 100}).map(() => 0)
+  Array.from({length: 100}, () => 0)
   ```
 
-### Filter
-
-* 数组去空
-
-```javascript
-let arr = ['1',' ',undefined,'',20,0,undefined,'end']
-
-let result = arr.filter((item)=>{
-   return item || typeof item === "number"
-})
-
-//['1',' ',20,0,'end']
-```
-
-
-
-###  Some
-
-* 判断数组中是否有元素符合条件
-
-```js
-let arr = [3,4,5,6,7];
-
-let result = arr.some((item,index,arr)=>{
-     return item > 5;
-})
-//true
-```
-
-### 遍历器
+#### 遍历器
 
 * `for`
 * `for in`
 * `for of`
 * `forEach`
 
-### map和forEach的区别
-
-* forEach遍历循环原数组`forEach((item, index, Array)=>{})`
-
-* map返回新数组，callback里需要return值，否则返回undefined
+* 
 
 ### 深浅拷贝
 
@@ -985,60 +971,80 @@ async function processArr(arr){
 */
 ```
 
-ES9 for await of
+#### ES9 for await of
 
 ```js
 for await (const item of arr){}
 ```
 
-### **Object.create**
-
-* 将传入的对象作为目标对象的原型
-
-```js
-Sub.prototype = Object.create(super.prototype)
-VueComponent.prototype.__proto__=== Vue.prototype
-```
-
-### 表单去空白
-
-```js
-.trim();
-```
-
-### 重复输出
-
-```js
-function star(num){
-    return"*".repeat(num || 8)
-}
-star(3) //***
-```
-
-### 锁定变量
-
-```
-Object.freeze(变量)
-```
-
-
-
-### 原型和原型链
-
-原型：每个构造函数都有原型对象，prototype
-
-prototype有两个属性：
-
-1. constructor：指向构造函数本身
-2. __proto__：指向上一级原型 
-
-### 宏任务&微任务
+### 宏任务 & 微任务
 
 * 浏览器中只有任务Task和微任务Microtask。
   1. 使用`script`标签、`setTimeout`可以创建任务。
   2. 使用`Promise.then`、`window.queueMicrotask`、`MutationObserver`|`Proxy` 可以创建微任务。
 
-![宏任务微任务](C:\Users\14046\Desktop\DOC\images\宏任务微任务.png)
+![宏任务微任务](C:\Users\14046\Desktop\DOC\images\宏任务微任务.png) 
+
+### import
+
+* webpack编译es6动态引入import()时不能传入变量，而要传入字符串，webpack目前的实现方式不能实现完全动态
+* 可以通过字符串模板提供部分信息给webpack：`import(''./path/$myFile')`，编译时会变易所有path下的模块，运行时确定myFile的值才会加载，从而实现懒加载
+* require是运行时加载模块，可以实现动态加载
+* ES2020提案引入import()函数，支持动态加载模块
+
+## API
+
+### Object
+
+#### Object.create
+
+* 将传入的对象作为目标对象的原型
+
+  ```js
+  Sub.prototype = Object.create(super.prototype)
+  VueComponent.prototype.__proto__=== Vue.prototype //true
+  ```
+
+#### Object.freeze
+
+* 锁定对象
+
+### URLSearchParams
+
+* `URLSearchParams API` 提供对 `URL` 查询的读写访问
+
+  ```js
+  const myURL = new URL("https://example.org/?abc=123");
+  myURL.searchParams.get('abc');// 123
+  myURL.searchParams.append('mun', '123');// 追加 https://example.org?abc=123&mun=123
+  myURL.searchParams.set("a", "1");// 设置 https://example.org?a=1
+  myURL.searchParams.delete("mun");// 删除
+  ```
+
+* 使用了 `new URLSearchParams(location.search) `就可以直接使用 searchParams 的方法
+
+  ```js
+  const params = new URLSearchParams(location.search);
+  params.has('a')
+  params.get('a')
+  params.getAll('a') //出现多个 a 的情况
+  params.set('b','b')
+  params.append('a', 'b'); // https://example.org/?a=b
+  params.toString(); // a=b&b=c
+  ```
+
+### ClassList
+
+* 节点的类名方法
+
+  ```js
+  Element.classList.length
+  Element.classList.contains('className')  //判断类名是否存在
+  Element.classList.add('test')            //添加
+  Element.classList.remove('test')         //删除
+  Element.classList.toggle('test')         //有就删除，没有就添加
+  ```
+
 
 ## 设计模式
 
@@ -1046,13 +1052,7 @@ prototype有两个属性：
 
 #### eventhub
 
-* on
-
-* off
-
-* emit
-
-* once
+* on、off、emit、once
 
   ```typescript
   class EventHub {
@@ -1085,221 +1085,6 @@ prototype有两个属性：
   
   export default EventHub;
   ```
-
-  
-
-
-
-# 实用方法
-
-### 首字母大写
-
-```js
-firstUpperCase(){
-    let [first, ...rest] = this.fullName
-    return first.toUpperCase() + rest.join('')
-}
-
-firstUpperCase() {
-    return this.fullName.split(' ').map((word)=>{
-      return word[0].toUpperCase() + word.slice(1)
-    }).join(' ')
-  }
-```
-
-
-
-### 动态添加类名
-
-* 判断是否有这个类名
-
-```js
-hasClass(el,className){
-    const reg = new RegExp('(^|\\s)'+ className +'(\\s|$)')  
-    // \\s    /\s/ 空格
-    // ^开头  |或  $结尾
-	return reg.test(el.className)
-}
-```
-
-```js
-addClass(el,className){
-    if(hasClass(el, className)){
-        return;
-    }
-
-    let newClass = el.className.split(' ')    //Array
-    newClass.push('className')
-    newClass.join(' ')    //String
-}
-
-```
-
-
-
-### ClassList方法
-
-```js
-Element.classList.length
-Element.classList.contains('className')  //判断一个类型是不是存在，返回true和false
-Element.classList.add('test')            //添加一个类名
-Element.classList.remove('test')         //去掉一个类名
-Element.classList.toggle('test')         //引号中的类名，有就删除，没有就添加
-
-```
-
-### 获取数组重复2次或者两次以上的元素
-
-```js
-let arr = [12,3,4,3,4,5,22,3,4,6,7,6,75,67,56,7,12];
-let Arr = [];
-let repArr = [];
-for(let i = 0; i < arr.length; i++){
-    if(Arr.indexOf(arr[i]) == -1){
-        Arr.push(arr[i])
-    }else{
-        if(repArr.indexOf(arr[i]) == -1){
-            repArr.push(arr[i])
-        }
-    }
-}
-```
-
-### 递归拼接树形结构
-
-```js
-//树形菜单结构
-const rootList = [
-    { id:1,  parent:null, text:'菜单1' },
-    { id:11, parent:1,    text:'菜单1-1' },
-    { id:12, parent:1,    text:'菜单1-2' },
-    { id:2,  parent:null, text:'菜单2' },
-    { id:21, parent:2,    text:'菜单2-1' }
-]
-
-function getTreeList(rootList, id, list){
-    for(let item of rootList){
-        if(item.parent == id){
-            list.push(item)
-        }
-    }
-    
-    for(let i of list){
-        i.children = []
-        
-        getTreeList(rootList, i.id, i.children)
-            
-        if(i.children.length == 0){
-            delete i.children
-        }
-    }
-    
-    return list
-}
-
-const res = getTreeList(rootList, null, [])
-
-/**
- [
- 	{
- 		id: 1,
-		parent: null,
-		text: "菜单1",
-		children: [
-			{
-				id: 11
-				parent: 1
-				text: "菜单1-1"
-			},
-			{
-				id: 12
-				parent: 1
-				text: "菜单1-2"
-			}
-		]
- 	},
- 	{
- 		id: 2,
-		parent: null,
-		text: "菜单2",
-		children: [
-			{
-				id: 21
-                parent: 2
-                text: "菜单2-1"
-			}
-		]
- 	}
- ]
- */
-```
-
-### newSet解构
-
-```js
-var arr = new Set([1,2,3,4,5])
-[...arr][arr.size-1]
-```
-
-### 触屏即播放
-
-```javascript
-$('html').one('touchstart',function(){  
- audio.play()  
-})
-```
-
-#### **获取数组重复2次或者两次以上的元素**
-
-```js
-let arr = [12,3,4,3,4,5,22,3,4,6,7,6,75,67,56,7,12];
-let Arr = [];
-let repArr = [];
-for(let i = 0; i < arr.length; i++){
-    if(Arr.indexOf(arr[i]) == -1){
-        Arr.push(arr[i])
-    }else{
-        if(repArr.indexOf(arr[i]) == -1){
-            repArr.push(arr[i])
-        }
-    }
-}
-```
-
-### **ajax问题/错误**
-
-* 通过设置`tranditional`来阻止深度序列化
-
-```js
-$.ajax(
-    url:"xxx",
-    tranditional:true,
-    data:data
-}
-```
-
-### 立即执行函数里传window
-
-```js
-(function (window, undefined){
-    
-})(window)
-```
-
-* 减少作用域链查找，访问速度更快
-* `undefined`是变量，可以重新赋值但无效，`null`是关键字不能赋值
-
-### Object.defineProperty()取代直接修改原型链
-
-```js
-vue.prototype.$router = {}
-
-Object.defineProperty(vue.prtotype, '$route', {
-	set:function(){
-		...
-	}
-})
-```
 
 ### 架构模式
 
@@ -1433,26 +1218,19 @@ Object.defineProperty(vue.prtotype, '$route', {
   }
   ```
 
-#### 应用场景
+* 应用场景
 
-1. DOM 元素的拖拽`mousemove`
+  1. DOM 元素的拖拽`mousemove`
+  2. 射击游戏在单位时间只能发射一颗子弹`mousedown/keydown`
+  3. Canvas 模拟画板功能`mousemove`
+  4. 懒加载，在滚动过程中判断是否需要加载图片`scroll`
+  5. 页面滚动到底部加载更多`scroll`
 
-2. 射击游戏在单位时间只能发射一颗子弹`mousedown/keydown`
+### 去空白
 
-3. Canvas 模拟画板功能`mousemove`
-
-4. 懒加载，在滚动过程中判断是否需要加载图片`scroll`
-
-5. 页面滚动到底部加载更多`scroll`
-   ﻿
-   ﻿
-   ﻿
-
-
-﻿
-﻿
-
-
+```js
+string.trim()
+```
 
 
 

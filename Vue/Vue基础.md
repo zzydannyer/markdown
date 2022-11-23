@@ -596,6 +596,282 @@ computed: {
 
 * 函数的形式组件每次会返回新的对象，不会公用一个对象
 
+## Vue修饰符
+
+#### .once
+
+`@click.once`，点击只执行一次
+
+#### .self
+
+* 只有点击事件绑定的元素才会触发事件
+
+  ```jsx
+  <div @click.self="clickEvent(2)">
+      <button @click="clickEvent(1)">点击</button>
+  </div>
+  
+  methods: {
+      clickEvent(num) {
+          //不加 self 点击按钮输出 1 2
+          //加了 self 点击按钮输出 1 点击div才会输出 2
+          console.log(num)
+      }
+  }
+  ```
+
+#### .prevent
+
+* 阻止默认事件，比如a标签的默认跳转
+
+  ```jsx
+  <a href="#" @click.prevent="clickEvent(1)">点我</a>
+  
+  methods: {
+      clickEvent(num) {
+          //不加 prevent 点击a标签 先跳转然后输出 1
+          //加了 prevent 点击a标签 不会跳转只会输出 1
+          console.log(num)
+      }
+  }
+  ```
+
+* `@click.prevent.once`，只生效一次阻止默认事件，之后继续生效原生事件
+* `@click.prevent.self`阻止父子元素所有的点击
+* `@click.prevent.self`阻止元素自身点击
+
+#### .stop
+
+* 阻止冒泡
+
+  ```jsx
+  <div @click="clickEvent(2)">
+      <button @click.stop="clickEvent(1)">点击</button>
+  </div>
+  
+  methods: {
+      clickEvent(num) {
+          //不加 stop 点击按钮输出 1 2
+          //加了 stop 点击按钮输出 1
+          console.log(num)
+      }
+  }
+  ```
+
+#### .capture
+
+* 将冒泡事件变为捕获事件
+
+  ```jsx
+  <div @click.capture="clickEvent(2)">
+      <button @click="clickEvent(1)">点击</button>
+  </div>
+  
+  methods: {
+      clickEvent(num) {
+          //不加 capture 点击按钮输出 1 2
+          //加了 capture 点击按钮输出 2 1
+          console.log(num)
+      }
+  }
+  ```
+
+#### .passive
+
+* 每次事件产生，浏览器都会去查询一下是否有preventDefault阻止该次事件的默认动作。加上passive将内核线程查询跳过，可以大大提升滑动的流畅度
+
+  ```
+  <div @scroll.passive="onScroll">...</div>
+  <div @touchmove.passive="onTouchmove">...</div>
+  ```
+
+#### .camel
+
+* 识别绑定值的大小写
+
+  ```jsx
+  //不加camel viewBox会被识别成viewbox
+  <svg :viewBox="viewBox"></svg>
+  
+  //加了canmel viewBox才会被识别成viewBox
+  <svg :viewBox.camel="viewBox"></svg>
+  ```
+
+#### .prop
+
+* 通过自定义属性存储变量，避免暴露数据
+
+* 防止污染 HTML 结构
+
+  ```jsx
+  <div :my-name="prop" />
+  // 最终保留了 my-name属性
+  <div :my-name.prop="prop2" />
+  // 最终删除了 my-name属性
+  
+  data () {
+  	return {
+  		prop: 'hello prop',
+          prop2: 'hello prop2'
+      }
+  },
+  console.log(prop.getAttribute('my-name')) // hello prop
+  console.log(prop2.getAttribute('my-name')) // null
+  ```
+
+#### .native
+
+* 监听组件根元素的原生事件
+
+  ```jsx
+  //执行不了
+  <My-component @click="shout(3)"></My-component>
+  
+  //可以执行
+  <My-component @click.native="shout(3)"></My-component>
+  ```
+
+#### .lazy
+
+* 改变输入框值时，`v-model`绑定的value不会改变，光标离开输入框时，绑定值才会改变
+
+#### .trim
+
+* 把`v-model`绑定的值过滤掉首尾空格
+
+#### .number
+
+* 将`v-model`的绑定值转化为数字
+  1. 先输入数字，取开头数字的部分
+  2. 先输入字符串，则返回字符串
+
+#### .left .middle .right
+
+* 鼠标左中右按键出发的事件
+
+  ```jsx
+  <button 
+   @click.middle="clickEvent(1)"  @click.left="clickEvent(2)"  @click.right="clickEvent(3)">点我</button>
+  
+  methods: {
+      //点击中键输出1
+      //点击左键输出2
+      //点击右键输出3
+      clickEvent(num) {
+          console.log(num)
+      }
+  }
+  ```
+
+#### .sync
+
+* 子组件修改父组件传值
+
+  ```jsx
+  /* 父组件 */
+  <children 
+    :title="doc.title" 
+    :content="doc.content" 
+    @update:title="doc.title = $event"
+    @update:content="doc.content = $event"
+   />
+  //相当于
+  <children v-bind.sync="doc"/>
+  
+  /* 子组件 */
+  changeTitle(){
+    this.$emit('update:title','new title')
+  }
+  changeContent(){
+    this.$emit('update:content','new content')
+  }
+  ```
+
+#### .keyCode
+
+* 使用键盘某个按键触发事件，具体的键码可以查询键码对应表
+
+  ```jsx
+  <input type="text" @keyup.enter="shout()">
+  <input type="text" @keyup.up.down="shout()">
+  //普通键
+  .enter 
+  .tab
+  .delete //(捕获“删除”和“退格”键)
+  .space
+  .esc
+  .up
+  .down
+  .left
+  .right
+  .page-up
+  .page-down
+  
+  //系统修饰键
+  .ctrl
+  .alt
+  .meta
+  .shift
+  ```
+
+* 自定义按键修饰符
+
+  ```jsx
+  Vue.config.keyCodes = {
+    q: 81
+  }
+  
+  <div class="custom">
+    <input type="text" @keydown.q="handleKeyDown">
+  </div>
+  
+  export default {
+    name: 'custom',
+    methods: {
+      handleKeyDown () {
+        console.log('按下了q')
+      }
+    }
+  }
+  ```
+
+  
+
+#### .exact
+
+* 用于更精准地控制按键事件
+
+  ```jsx
+  <!-- 即使 Alt 或 Shift 被一同按下时也会触发 -->
+  <button @click.ctrl="onClick">A</button>
+  <!-- 有且只有 Ctrl 被按下的时候才触发 -->
+  <button @click.ctrl.exact="onCtrlClick">A</button>
+  ```
+
+## 目录结构
+
+```html
+├── package.json
+└── src
+    ├── App.vue
+    ├── main.js
+    ├── router.js
+    └── views
+        ├── About.vue
+        ├── Home.vue
+        └── modifiers
+            ├── capture.vue
+            ├── once.vue
+            ├── order.vue
+            ├── passive.vue
+            ├── prevent.vue
+            ├── self.vue
+            ├── stop.vue
+            └── ...
+```
+
+
+
 ## 组件通信
 
 ![image-20220724022241773](Vue%E5%9F%BA%E7%A1%80.assets/image-20220724022241773.png)
@@ -881,38 +1157,7 @@ onClick(){
 }
 ```
 
-### .sync操作符
-
-* 父组件
-
-  ```vue
-  <document 
-    :title="doc.title" 
-    :content="doc.content" 
-    @update:title="doc.title = $event"
-    @update:content="doc.content = $event"
-   />
-  ```
-
-* 子组件
-
-  ```js
-  changeTitle(){
-    this.$emit('update:title','new title')
-  }
-  
-  changeContent(){
-    this.$emit('update:content','new content')
-  }
-  ```
-
-* 使用.sync
-
-  ```vue
-  <document v-bind.sync="doc"/>
-  ```
-
-### 子组件调用父组件方法
+子组件调用父组件方法
 
 * 调用`this.$parent.function`
 * 调用`this.$emit(function, value)`，父组件监听这个事件

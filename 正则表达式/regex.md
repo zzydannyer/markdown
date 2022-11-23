@@ -17,6 +17,10 @@ let result = regexp.test(target) //return true or false
 
 * `|`或，`/A|B/`
 
+* `^`开头
+
+* `$`结尾
+
 * `.`通配符
 
   * `/.un/`匹配`run`、`sun`、`fun`、`pun`、`nun` 和 `bun`

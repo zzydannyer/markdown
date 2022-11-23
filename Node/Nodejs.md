@@ -35,29 +35,43 @@ rmdir /s/q node_modules
 npm cache clear --force / npm cache clear -f
 ```
 
+#### 锁定具体版本号
+
+* 使npm i的时候不自动升级
+
+  ```json
+  "devDependencies": {
+      "webpack": "5.1.3",//不带^或~
+  }
+  ```
+
+  ```shell
+  npm install --save-dev --save-exact prettier 
+  ```
+
 #### 命令
 
-| npm                                            | pnpm                   | yarn               |
-| ---------------------------------------------- | ---------------------- | ------------------ |
-| `npm install / i`                              | `pnpm install / i`     | `yarn`             |
-| `npm i <pkg>`                                  | `pnpm add `            | `yarn add`         |
-| `npm run <cmd>`                                | `pnpm `                | `yarn`             |
-| `dependencies`                                 | `pnpm add <pkg>`       |                    |
-| `devDependencies`                              | `pnpm add -D <pkg>`    |                    |
-| `optionalDependencies`                         | `pnpm add -O <pkg>`    |                    |
-| `path`                                         | `pnpm add -g <pkg>`    |                    |
-| 标记为 `next` 的版本                           | `pnpm add <pkg>@next`  |                    |
-| 指定版本                                       | `pnpm add <pkg>@3.0.0` |                    |
-| `npm cache clear --force / npm cache clear -f` |                        | `yarn cache clean` |
-|                                                |                        | `yarn list `       |
-| `npm info`                                     |                        | `yarn info`        |
-|                                                | `npm i -g pnpm@next-7` | `npm i -g yarn`    |
-| `npm init`                                     |                        | `yarn init`        |
-| `npm update`                                   |                        | `yarn upgrade`     |
-| `npm unistall`                                 |                        | `yarn remove`      |
-|                                                |                        |                    |
-|                                                |                        |                    |
-|                                                |                        |                    |
+| npm                  | pnpm                    | yarn                     |
+| -------------------- | ----------------------- | ------------------------ |
+| `npm install / i`    | `pnpm install / i`      | `yarn`                   |
+| `npm i `             | `pnpm add `             | `yarn add`               |
+| `npm run <cmd>`      | `pnpm `                 | `yarn`                   |
+| `npm i <pkg>`        | `pnpm add <pkg>`        |                          |
+| ``npm i -D <pkg>``   | `pnpm add -D <pkg>`     |                          |
+|                      | `pnpm add -O <pkg>`     |                          |
+| `npm i -g <pkg>`     | `pnpm add -g <pkg>`     |                          |
+| `npm i <pkg>@next`   | `pnpm add <pkg>@next`   |                          |
+| `pnpm i <pkg>@3.0.0` | `pnpm add  <pkg>@3.0.0` |                          |
+| `npm cache clear -f` |                         | `yarn cache clean`       |
+|                      |                         | `yarn list `             |
+| `npm info`           |                         | `yarn info`              |
+|                      | `npm i -g pnpm@next-7`  | `npm i -g yarn`          |
+| `npm init`           |                         | `yarn init`              |
+| `npm update`         |                         | `yarn upgrade`           |
+| `npm unistall`       |                         | `yarn remove`            |
+| `npm --save-exact`   |                         | `yarn add --dev --exact` |
+|                      |                         |                          |
+|                      |                         |                          |
 
 ### pnpm
 
