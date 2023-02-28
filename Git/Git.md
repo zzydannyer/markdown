@@ -170,3 +170,12 @@ $ git config --global core.autocrlf false
   为`false`时，line endings 不做任何改变，文本文件保持其原来的样子。
 
   为 `input` 时，add 时 Git 会把 CRLF 转换为 LF，而 check 时仍旧为 LF，所以 Windows 操作系统**不建议设置此值**。
+
+### VSCode登录bad credentials
+
+终端输入
+
+```
+git config --global credential.helper store
+```
+
