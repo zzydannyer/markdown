@@ -260,7 +260,7 @@ let num: number = undefined;
 
   ```typescript
   type Mutable<T> = {
-      -readonlu [P in keyof T]: T[P];
+      -readonly [P in keyof T]: T[P];
   }
   ```
 
