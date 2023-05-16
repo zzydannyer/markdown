@@ -33,7 +33,6 @@
     * `activated`缓存组件被激活
     * `deactivated`缓存组件停用
     * `errorCaptured`捕获来自子孙组件的错误
-  
 * ==vue3 Composition API==
 
   * `setup`
@@ -41,13 +40,15 @@
     2. 没有this
     3. 无法使用data和methods
     4. 只能同步不能异步
-
   * `onBeforeMount`
   * `onMounted`
   * `onBeforeUpdate`
   * `onUpdated`
   * `onBeforeUnmount`
   * `onUnmounted`
+  * `onActivated`
+  * `onDeactivated`
+  * `onErrorCaptured`
   * `renderTracked`调试钩子，响应式依赖收集时调用
   * `renderTriggered`调试钩子，响应式依赖触发时调用
   * `serverPrefetch`ssr only，组件实例在服务器上被渲染前调用
@@ -167,6 +168,10 @@ export default {
 * 基本类型值要用`ref`来包装，引用数据类型需要用`reactive`来包装
 * 使用`proxy`代理对象，因为proxy只能接收对象作为参数，所以==基本类型值==被转化为了`{value：值}`
 * 对用reactive包装的引用类型数据进行解构赋值的时候，需要使用`torefs`。原理：`torefs`把数据包装成``{key:proxy(value:值)}``
+* `ref`是通过一个中间对象`RefImpl`持有数据，并通过重写它的set和get方法实现数据劫持的，本质上依旧是通过[Object.defineProperty ](https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FReference%2FGlobal_Objects%2FObject%2FdefineProperty)对`RefImpl`的`value`属性进行劫持。
+* `reactive`则是通过[Proxy](https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FReference%2FGlobal_Objects%2FProxy)进行劫持的。Proxy无法对基本数据类型进行操作，进而导致`reactive`在面对基本数据类型时的束手无策。
+
+  
 
 ### diff算法
 
