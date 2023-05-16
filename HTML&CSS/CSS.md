@@ -86,6 +86,19 @@
 * 百分比会继承父级
 * vw只和设备宽度有关系
 
+### aspect ratio设置长宽比
+
+```css
+.container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+```
+
+
+
 ### position属性
 
 - `static`：默认
