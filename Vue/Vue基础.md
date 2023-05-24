@@ -511,9 +511,23 @@ this.$refs.test.$el //获取组件渲染后的DOM
 
   `v-show`改变DOM元素display属性，只基于CSS
 
-### v-on监听多个方法
+# v-on
 
-`v-on='onClick,onBlur'`
+## 1. 动态事件
+
+```vue
+<button @[event]="handleEvent"> Click </button>
+
+const event = 'click'
+```
+
+## 2. 监听多个方法
+
+```vue
+<button v-on="onClick,onBlur"> Click </button>
+```
+
+
 
 ### Vue.set / this.$set
 
@@ -528,6 +542,8 @@ this.$refs.test.$el //获取组件渲染后的DOM
   */
   Vue.set(this.arr, 0, {content: message})
   ```
+
+### 
 
 
 ### 自定义指令
